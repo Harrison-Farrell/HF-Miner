@@ -8,9 +8,13 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# Include common modules
+include(Coverage)
+include(Cppcheck)
+include(Doxygen)
 include(Format)
 
-
+# Include subdirectories
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(benchmark)
