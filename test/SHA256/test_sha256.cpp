@@ -44,7 +44,7 @@ TEST(SHA256_OneShot, Hex_StandardVectors) {
     // Dirtify buffer to ensure null-terminator is actually written
     memset(output, 'X', SHA256_HEX_SIZE);
 
-    sha256_hex(tv.input.data(), tv.input.size(), output);
+    SHA256::sha256_hex(tv.input.data(), tv.input.size(), output);
 
     EXPECT_STREQ(output, tv.expected_hex.c_str()) << "Failed on: " << tv.name;
     EXPECT_EQ(output[64], '\0') << "Failed to null terminate: " << tv.name;
@@ -55,7 +55,7 @@ TEST(SHA256_OneShot, Bytes_StandardVectors) {
   uint8_t output[SHA256_BYTES_SIZE];
 
   for (const auto &tv : NIST_VECTORS) {
-    sha256_bytes(tv.input.data(), tv.input.size(), output);
+    SHA256::sha256_bytes(tv.input.data(), tv.input.size(), output);
 
     std::string hex_result = bytes_to_hex_string(output, SHA256_BYTES_SIZE);
     EXPECT_EQ(hex_result, tv.expected_hex) << "Failed on: " << tv.name;
@@ -64,14 +64,14 @@ TEST(SHA256_OneShot, Bytes_StandardVectors) {
 
 TEST(SHA256_Streaming, Fragmentation_Consistency) {
   // Ensure hashing "abc" in one go is same as "a" + "b" + "c"
-  struct sha256 ctx;
+  struct SHA256::sha256 ctx;
   char output[SHA256_HEX_SIZE];
 
-  sha256_init(&ctx);
-  sha256_append(&ctx, "a", 1);
-  sha256_append(&ctx, "b", 1);
-  sha256_append(&ctx, "c", 1);
-  sha256_finalize_hex(&ctx, output);
+  SHA256::sha256_init(&ctx);
+  SHA256::sha256_append(&ctx, "a", 1);
+  SHA256::sha256_append(&ctx, "b", 1);
+  SHA256::sha256_append(&ctx, "c", 1);
+  SHA256::sha256_finalize_hex(&ctx, output);
 
   EXPECT_STREQ(
       output,
@@ -80,18 +80,18 @@ TEST(SHA256_Streaming, Fragmentation_Consistency) {
 
 TEST(SHA256_Streaming, ContextReuse) {
   // Ensure calling init() on a dirty struct resets it correctly
-  struct sha256 ctx;
+  struct SHA256::sha256 ctx;
   char output[SHA256_HEX_SIZE];
 
   // First usage
-  sha256_init(&ctx);
-  sha256_append(&ctx, "abc", 3);
-  sha256_finalize_hex(&ctx, output);
+  SHA256::sha256_init(&ctx);
+  SHA256::sha256_append(&ctx, "abc", 3);
+  SHA256::sha256_finalize_hex(&ctx, output);
 
   // Reuse
-  sha256_init(&ctx);
-  sha256_append(&ctx, "", 0); // Empty string
-  sha256_finalize_hex(&ctx, output);
+  SHA256::sha256_init(&ctx);
+  SHA256::sha256_append(&ctx, "", 0);  // Empty string
+  SHA256::sha256_finalize_hex(&ctx, output);
 
   // Expect empty string hash
   EXPECT_STREQ(
@@ -100,12 +100,12 @@ TEST(SHA256_Streaming, ContextReuse) {
 }
 
 TEST(SHA256_Streaming, FinalizeBytes_Works) {
-  struct sha256 ctx;
+  struct SHA256::sha256 ctx;
   uint8_t output[SHA256_BYTES_SIZE];
 
-  sha256_init(&ctx);
-  sha256_append(&ctx, "abc", 3);
-  sha256_finalize_bytes(&ctx, output);
+  SHA256::sha256_init(&ctx);
+  SHA256::sha256_append(&ctx, "abc", 3);
+  SHA256::sha256_finalize_bytes(&ctx, output);
 
   std::string hex = bytes_to_hex_string(output, SHA256_BYTES_SIZE);
   EXPECT_EQ(hex,
@@ -123,7 +123,7 @@ TEST(SHA256_EdgeCases, BlockBoundary_55Bytes) {
   std::string input(55, 'a');
   char output[SHA256_HEX_SIZE];
 
-  sha256_hex(input.data(), input.size(), output);
+  SHA256::sha256_hex(input.data(), input.size(), output);
 
   // Known hash for 55 'a's
   // Verified via `echo -n
@@ -144,7 +144,7 @@ TEST(SHA256_EdgeCases, BlockBoundary_56Bytes_Spillover) {
   std::string input(56, 'a');
   char output[SHA256_HEX_SIZE];
 
-  sha256_hex(input.data(), input.size(), output);
+  SHA256::sha256_hex(input.data(), input.size(), output);
 
   // Verified via sha256sum
   const char *expected =
@@ -157,7 +157,7 @@ TEST(SHA256_EdgeCases, LongInput_MultiBlock) {
   std::string input(200, 'A');
   char output[SHA256_HEX_SIZE];
 
-  sha256_hex(input.data(), input.size(), output);
+  SHA256::sha256_hex(input.data(), input.size(), output);
 
   // Verified via sha256sum
   const char *expected =

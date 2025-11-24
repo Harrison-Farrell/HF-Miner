@@ -1,5 +1,7 @@
 #include "SHA256/sha256.h"
 
+namespace SHA256 {
+
 // Rotate right
 static inline uint32_t rotr(uint32_t x, int n) {
   return (x >> n) | (x << (32 - n));
@@ -31,7 +33,7 @@ static inline void update_w(uint32_t *w, int i, const uint8_t *buffer) {
   }
 }
 
-static void sha256_block(struct sha256 *sha) {
+static void sha256_block(struct SHA256::sha256 *sha) {
   // State of the program
   uint32_t *state = sha->state;
 
@@ -91,8 +93,9 @@ static void sha256_block(struct sha256 *sha) {
   state[6] += g;
   state[7] += h;
 }
+}  // namespace SHA256
 
-void sha256_init(struct sha256 *sha) {
+void SHA256::sha256_init(struct SHA256::sha256 *sha) {
   sha->state[0] = 0x6a09e667;
   sha->state[1] = 0xbb67ae85;
   sha->state[2] = 0x3c6ef372;
@@ -105,7 +108,7 @@ void sha256_init(struct sha256 *sha) {
   sha->buffer_counter = 0;
 }
 
-void sha256_append_byte(struct sha256 *sha, uint8_t byte) {
+void sha256_append_byte(struct SHA256::sha256 *sha, uint8_t byte) {
   sha->buffer[sha->buffer_counter++] = byte;
   sha->n_bits += 8;
 
@@ -115,7 +118,8 @@ void sha256_append_byte(struct sha256 *sha, uint8_t byte) {
   }
 }
 
-void sha256_append(struct sha256 *sha, const void *src, size_t n_bytes) {
+void SHA256::sha256_append(struct sha256 *sha, const void *src,
+                           size_t n_bytes) {
   const uint8_t *bytes = (const uint8_t *)src;
   size_t i;
 
@@ -124,7 +128,7 @@ void sha256_append(struct sha256 *sha, const void *src, size_t n_bytes) {
   }
 }
 
-void sha256_finalize(struct sha256 *sha) {
+void sha256_finalize(struct SHA256::sha256 *sha) {
   int i;
   uint64_t n_bits = sha->n_bits;
 
@@ -140,7 +144,7 @@ void sha256_finalize(struct sha256 *sha) {
   }
 }
 
-void sha256_finalize_hex(struct sha256 *sha, char *dst_hex65) {
+void SHA256::sha256_finalize_hex(struct SHA256::sha256 *sha, char *dst_hex65) {
   int i, j;
   sha256_finalize(sha);
 
@@ -154,7 +158,8 @@ void sha256_finalize_hex(struct sha256 *sha, char *dst_hex65) {
   *dst_hex65 = '\0';
 }
 
-void sha256_finalize_bytes(struct sha256 *sha, void *dst_bytes32) {
+void SHA256::sha256_finalize_bytes(struct SHA256::sha256 *sha,
+                                   void *dst_bytes32) {
   uint8_t *ptr = (uint8_t *)dst_bytes32;
   int i, j;
   sha256_finalize(sha);
@@ -166,14 +171,14 @@ void sha256_finalize_bytes(struct sha256 *sha, void *dst_bytes32) {
   }
 }
 
-void sha256_hex(const void *src, size_t n_bytes, char *dst_hex65) {
+void SHA256::sha256_hex(const void *src, size_t n_bytes, char *dst_hex65) {
   struct sha256 sha;
   sha256_init(&sha);
   sha256_append(&sha, src, n_bytes);
   sha256_finalize_hex(&sha, dst_hex65);
 }
 
-void sha256_bytes(const void *src, size_t n_bytes, void *dst_bytes32) {
+void SHA256::sha256_bytes(const void *src, size_t n_bytes, void *dst_bytes32) {
   struct sha256 sha;
   sha256_init(&sha);
   sha256_append(&sha, src, n_bytes);
