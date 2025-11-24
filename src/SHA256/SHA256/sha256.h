@@ -1,12 +1,12 @@
-#ifndef SHA256_H
-#define SHA256_H
+#ifndef __SHA256_H__
+#define __SHA256_H__
 
 // system includes
 #include <stddef.h>
 #include <stdint.h>
 
 namespace SHA256 {
-#define SHA256_HEX_SIZE (64 + 1)  // 64 hex chars + null terminator
+#define SHA256_HEX_SIZE (64 + 1) // 64 hex chars + null terminator
 #define SHA256_BYTES_SIZE 32
 
 /// \brief Compute the SHA-256 and write it as a hex string.
@@ -56,5 +56,5 @@ void sha256_finalize_hex(struct sha256 *sha, char *dst_hex65);
 /// \note After finalization the context should be reinitialized before reuse.
 void sha256_finalize_bytes(struct sha256 *sha, void *dst_bytes32);
 
-}  // namespace SHA256
-#endif  // SHA256_H
+} // namespace SHA256
+#endif // __SHA256_H__

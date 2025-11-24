@@ -41,7 +41,7 @@ TEST(SHA256_OneShot, Hex_StandardVectors) {
   char output[SHA256_HEX_SIZE];
 
   for (const auto &tv : NIST_VECTORS) {
-    // Dirtify buffer to ensure null-terminator is actually written
+    // Dirt-ify buffer to ensure null-terminator is actually written
     memset(output, 'X', SHA256_HEX_SIZE);
 
     SHA256::sha256_hex(tv.input.data(), tv.input.size(), output);
@@ -90,7 +90,7 @@ TEST(SHA256_Streaming, ContextReuse) {
 
   // Reuse
   SHA256::sha256_init(&ctx);
-  SHA256::sha256_append(&ctx, "", 0);  // Empty string
+  SHA256::sha256_append(&ctx, "", 0); // Empty string
   SHA256::sha256_finalize_hex(&ctx, output);
 
   // Expect empty string hash

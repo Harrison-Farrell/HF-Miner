@@ -9,7 +9,6 @@ target_compile_options(sha256_obj
 
 target_include_directories(sha256_obj
 	PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
-	PUBLIC "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
 set_target_properties(sha256_obj PROPERTIES

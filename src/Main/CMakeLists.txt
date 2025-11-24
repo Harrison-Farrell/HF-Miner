@@ -1,12 +1,12 @@
-set(executeable_name HF-Miner)
+set(executable_name HF-Miner)
 
-add_executable(${executeable_name} main.cpp)
+add_executable(${executable_name} main.cpp)
 
-target_compile_options(${executeable_name}
+target_compile_options(${executable_name}
 	PRIVATE ${DEFAULT_CXX_COMPILE_FLAGS}
 	PRIVATE ${DEFAULT_CXX_OPTIMIZE_FLAG}
 )
 
-target_link_libraries(${executeable_name}
+target_link_libraries(${executable_name}
 	PRIVATE sha256_static
 )
