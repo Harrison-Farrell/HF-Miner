@@ -93,7 +93,7 @@ static void sha256_block(struct SHA256::sha256 *sha) {
   state[6] += g;
   state[7] += h;
 }
-}  // namespace SHA256
+} // namespace SHA256
 
 void SHA256::sha256_init(struct SHA256::sha256 *sha) {
   sha->state[0] = 0x6a09e667;
@@ -172,15 +172,15 @@ void SHA256::sha256_finalize_bytes(struct SHA256::sha256 *sha,
 }
 
 void SHA256::sha256_hex(const void *src, size_t n_bytes, char *dst_hex65) {
-  struct sha256 sha;
-  sha256_init(&sha);
-  sha256_append(&sha, src, n_bytes);
-  sha256_finalize_hex(&sha, dst_hex65);
+  struct SHA256::sha256 sha;
+  SHA256::sha256_init(&sha);
+  SHA256::sha256_append(&sha, src, n_bytes);
+  SHA256::sha256_finalize_hex(&sha, dst_hex65);
 }
 
 void SHA256::sha256_bytes(const void *src, size_t n_bytes, void *dst_bytes32) {
-  struct sha256 sha;
-  sha256_init(&sha);
-  sha256_append(&sha, src, n_bytes);
-  sha256_finalize_bytes(&sha, dst_bytes32);
+  struct SHA256::sha256 sha;
+  SHA256::sha256_init(&sha);
+  SHA256::sha256_append(&sha, src, n_bytes);
+  SHA256::sha256_finalize_bytes(&sha, dst_bytes32);
 }

@@ -30,6 +30,5 @@ macro(AddGTests target)
 		PRIVATE GTest::gmock_main
 	)
 	gtest_discover_tests(${target})
-	add_test(NAME ${target} COMMAND ${target})
 	AddMemcheck(${target})
 endmacro()
