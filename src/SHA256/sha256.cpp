@@ -1,5 +1,10 @@
 #include "SHA256/sha256.h"
 
+// system includes
+#include <iomanip>
+#include <sstream>
+#include <stdexcept>
+
 namespace SHA256 {
 
 // Rotate right
@@ -183,4 +188,44 @@ void SHA256::sha256_bytes(const void *src, size_t n_bytes, void *dst_bytes32) {
   SHA256::sha256_init(&sha);
   SHA256::sha256_append(&sha, src, n_bytes);
   SHA256::sha256_finalize_bytes(&sha, dst_bytes32);
+}
+
+SHA256::Hash SHA256::hashStringToArray(const std::string &hex_string) {
+  // A full SHA-256 hex string is 64 characters long (32 bytes * 2 hex
+  // chars/byte).
+  if (hex_string.length() != 64) {
+    throw std::invalid_argument(
+        "Input string must be 64 characters long for SHA-256.");
+  }
+
+  SHA256::Hash bytes;
+
+  // Process two characters at a time
+  for (size_t i = 0; i < 32; ++i) {
+    // Extract the 2-character hexadecimal substring
+    std::string byte_string = hex_string.substr(i * 2, 2);
+
+    // Convert the 2-character hex string to an unsigned long, base 16
+    unsigned long value = std::stoul(byte_string, nullptr, 16);
+
+    // Cast the value to an unsigned char and store it
+    bytes[i] = static_cast<unsigned char>(value);
+  }
+
+  return bytes;
+}
+
+std::string SHA256::hashArrayToString(const SHA256::Hash &bytes) {
+  std::stringstream ss;
+  // Set formatting for hexadecimal output
+  ss << std::hex << std::setfill('0');
+
+  // Iterate through the array
+  for (unsigned char byte : bytes) {
+    // Print each byte as a 2-character hex number
+    // (e.g., 0x0A becomes "0a", 0xFF becomes "ff")
+    ss << std::setw(2) << static_cast<int>(byte);
+  }
+
+  return ss.str();
 }

@@ -53,26 +53,3 @@ TEST(BlockTEST, doubleSHA256Computation) {
   EXPECT_EQ(std::vector<uint8_t>(result.begin(), result.end()),
             std::vector<uint8_t>(expected_hash, expected_hash + 32));
 }
-
-TEST(BlockTEST, createMerkleRootEvenCount) {
-  Block::Hash =
-      0x925bcca21a95a015b5a371128610dd3f47cd68be76e2cb023790b2603c9c825e;
-  // c7b6fc699a18467d18d3d62b75ce3df6d11334453cc1a047b37a6c18fb725022
-  // 6094c3007890c1103bc3863a3928318d15c4e4fdd99f35f0de1d762b010e69e1
-  // a5948fe4155a63ee94bb5ad65d4c45b3e14c7fc61acd8cbd524908eaa1391525
-  std::vector<Block::Hash> tx_hashes { {}, {1} }
-};
-Block::Hash tx2 = {1};
-
-std::vector<Block::Hash> tx_hashes = {tx1, tx2};
-
-// Expected Merkle root computation
-Block::Block block;
-Block::Hash expected_root = block.doubleSHA256(tx1, tx2);
-
-// Compute Merkle root using createMerkleRoot
-Block::Hash computed_root = block.createMerkleRoot(tx_hashes);
-
-EXPECT_EQ(std::vector<uint8_t>(computed_root.begin(), computed_root.end()),
-          std::vector<uint8_t>(expected_root.begin(), expected_root.end()));
-}

@@ -4,15 +4,31 @@
 // system includes
 #include <stdint.h>
 
+#include <array>
+#include <string>
+
 namespace SHA256 {
-#define SHA256_HEX_SIZE (64 + 1)  // 64 hex chars + null terminator
+#define SHA256_HEX_SIZE (64 + 1) // 64 hex chars + null terminator
 #define SHA256_BYTES_SIZE 32
+
+using Hash = std::array<unsigned char, 32>;
+
+/// \brief Converts a 64-character hexadecimal string into a 32-byte array
+/// \param hex_string The 64-character hexadecimal hash string.
+/// \return std::array<unsigned char, 32> The byte array representation.
+/// \throws std::invalid_argument if not 64 characters long.
+Hash hashStringToArray(const std::string &hex_string);
+
+/// \brief Converts a 32-byte std::array into 64-character hexadecimal string.
+/// \param bytes The 32-byte array representation of the hash.
+/// \return std::string The 64-character hexadecimal hash string.
+std::string hashArrayToString(const Hash &bytes);
 
 /// \brief Compute the SHA-256 and write it as a hex string.
 /// \param src Pointer to the input data buffer.
 /// \param n_bytes Number of bytes to read from src.
-/// \param dst_hex65 Destination buffer to receive the hexadecimal digest. Must
-/// be at least SHA256_HEX_SIZE bytes.
+/// \param dst_hex65 Destination buffer to receive the hexadecimal digest.
+/// Must be at least SHA256_HEX_SIZE bytes.
 /// \note The output is 64 hex characters plus a null terminator.
 void sha256_hex(const void *src, size_t n_bytes, char *dst_hex65);
 
@@ -55,57 +71,5 @@ void sha256_finalize_hex(struct sha256 *sha, char *dst_hex65);
 /// \note After finalization the context should be reinitialized before reuse.
 void sha256_finalize_bytes(struct sha256 *sha, void *dst_bytes32);
 
-}  // namespace SHA256
-#endif  // __SHA256_H__
-
-/*
- /// \brief Converts a 64-character hexadecimal string into a 32-byte array
- /// \param hex_string The 64-character hexadecimal hash string.
- /// \return std::array<unsigned char, 32> The byte array representation.
- /// \throws std::invalid_argument if not 64 characters long.
-
-
-std::array<unsigned char, 32> hex_string_to_bytes(const std::string& hex_string)
-{
-    // A full SHA-256 hex string is 64 characters long (32 bytes * 2 hex
-chars/byte). if (hex_string.length() != 64) { throw std::invalid_argument("Input
-string must be 64 characters long for SHA-256.");
-    }
-
-    std::array<unsigned char, 32> bytes;
-
-    // Process two characters at a time
-    for (size_t i = 0; i < 32; ++i) {
-        // Extract the 2-character hexadecimal substring
-        std::string byte_string = hex_string.substr(i * 2, 2);
-
-        // Convert the 2-character hex string to an unsigned long, base 16
-        unsigned long value = std::stoul(byte_string, nullptr, 16);
-
-        // Cast the value to an unsigned char and store it
-        bytes[i] = static_cast<unsigned char>(value);
-    }
-
-    return bytes;
-}
-
-/*
- /// \brief Converts a 32-byte std::array into 64-character hexadecimal string.
- /// \param bytes The 32-byte array representation of the hash.
- /// \return std::string The 64-character hexadecimal hash string.
-
-
- std::string bytes_to_hex_string(const std::array<unsigned char, 32>& bytes) {
-    std::stringstream ss;
-    // Set formatting for hexadecimal output
-    ss << std::hex << std::setfill('0');
-
-    // Iterate through the array
-    for (unsigned char byte : bytes) {
-        // Print each byte as a 2-character hex number
-        // (e.g., 0x0A becomes "0a", 0xFF becomes "ff")
-        ss << std::setw(2) << static_cast<int>(byte);
-    }
-
-    return ss.str();
-} */
+} // namespace SHA256
+#endif // __SHA256_H__
