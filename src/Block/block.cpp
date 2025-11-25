@@ -1,7 +1,11 @@
-#include <Block/block.h>
+#include "Block/block.h"
 
 // system includes
 #include <algorithm>
+#include <vector>
+
+// project includes
+#include <SHA256/sha256.h>
 
 Block::Block::Block() : mVersion(0), mTimestamp(0), mBits(0), mNonce(0) {
   // Initialize previous block hash and Merkle root to zeros
@@ -11,14 +15,76 @@ Block::Block::Block() : mVersion(0), mTimestamp(0), mBits(0), mNonce(0) {
 
 Block::Block::~Block() {}
 
+void Block::Block::setPrevBlockHash(const Hash &prev_block_hash) {
+  mPrevBlockHash = prev_block_hash;
+}
+void Block::Block::setMerkleRoot(const Hash &merkle_root) {
+  mMerkleRoot = merkle_root;
+}
+
+void Block::Block::setVersion(uint32_t version) { mVersion = version; }
+
+void Block::Block::setTimestamp(uint32_t timestamp) { mTimestamp = timestamp; }
+
+void Block::Block::setBits(uint32_t bits) { mBits = bits; }
+
+void Block::Block::setNonce(uint32_t nonce) { mNonce = nonce; }
+
 uint32_t Block::Block::getVersion() const { return mVersion; }
 
-const uint8_t *Block::Block::getPrevBlockHash() const { return mPrevBlockHash; }
+const Block::Hash Block::Block::getPrevBlockHash() const {
+  return mPrevBlockHash;
+}
 
-const uint8_t *Block::Block::getMerkleRoot() const { return mMerkleRoot; }
+const Block::Hash Block::Block::getMerkleRoot() const { return mMerkleRoot; }
 
 uint32_t Block::Block::getTimestamp() const { return mTimestamp; }
 
 uint32_t Block::Block::getBits() const { return mBits; }
 
 uint32_t Block::Block::getNonce() const { return mNonce; }
+
+Block::Hash Block::Block::doubleSHA256(const Hash &left, const Hash &right) {
+  uint8_t concat[64];
+  std::copy(left.begin(), left.end(), concat);
+  std::copy(right.begin(), right.end(), concat + 32);
+
+  // first SHA-256 pass
+  Hash hash1;
+  SHA256::sha256_bytes(concat, SHA256_BYTES_SIZE * 2, hash1.data());
+
+  // second SHA-256 pass
+  Hash hash2;
+  SHA256::sha256_bytes(hash1.data(), SHA256_BYTES_SIZE, hash2.data());
+
+  return hash2;
+}
+
+Block::Hash Block::Block::createMerkleRoot(const std::vector<Hash> &tx_hashes) {
+  if (tx_hashes.empty()) {
+    std::fill(std::begin(mMerkleRoot), std::end(mMerkleRoot), 0);
+    return mMerkleRoot;
+  }
+  mMerkleRoot = recursiveMerkleCompute(tx_hashes).front();
+  return mMerkleRoot;
+}
+
+std::vector<Block::Hash>
+Block::Block::recursiveMerkleCompute(const std::vector<Hash> &hashes) {
+  if (hashes.size() == 1) {
+    return hashes;
+  }
+
+  std::vector<Hash> new_level;
+  size_t len = hashes.size();
+  new_level.reserve((len + 1) / 2);
+
+  for (size_t i = 0; i < len - 1; i += 2) {
+    new_level.push_back(doubleSHA256(hashes[i], hashes[i + 1]));
+  }
+  if (len % 2 == 1) {
+    new_level.push_back(doubleSHA256(hashes[len - 1], hashes[len - 1]));
+  }
+
+  return recursiveMerkleCompute(new_level);
+}

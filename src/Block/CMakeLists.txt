@@ -1,36 +1,28 @@
-add_library(block_obj OBJECT
-	block.cpp
+set(library_name Block)
+
+add_library(${library_name} STATIC block.cpp)
+add_library(HFM::${library_name} ALIAS ${library_name})
+
+target_link_libraries(${library_name}
+	PRIVATE HFM::SHA256
 )
 
-target_compile_options(block_obj
+target_compile_options(${library_name}
 	PRIVATE ${DEFAULT_CXX_COMPILE_FLAGS}
 	PRIVATE ${DEFAULT_CXX_OPTIMIZE_FLAG}
 )
 
-target_include_directories(block_obj
+target_include_directories(${library_name}
 	PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+	PUBLIC "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
-set_target_properties(block_obj PROPERTIES
-	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/Block/block.h
+set_target_properties(${library_name} PROPERTIES
+	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/${library_name}/block.h
 	POSITION_INDEPENDENT_CODE 1
 )
 
-add_library(block_shared SHARED)
-target_link_libraries(block_shared block_obj)
-set_target_properties(block_shared PROPERTIES
-	PREFIX "lib"
-	OUTPUT_NAME "HF-Miner$<$<CONFIG:Debug>:d>"
-)
-
-add_library(block_static STATIC)
-target_link_libraries(block_static block_obj)
-set_target_properties(block_static PROPERTIES
-	PREFIX "lib"
-	OUTPUT_NAME "HF-Miner$<$<CONFIG:Debug>:d>"
-)
-
-CleanCoverage(block_static)
-Format(block_static .)
-AddCppcheck(block_static)
-Doxygen(block_static Block)
+CleanCoverage(${library_name})
+Format(${library_name} .)
+AddCppcheck(${library_name})
+Doxygen(${library_name} ${library_name})

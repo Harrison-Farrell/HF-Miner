@@ -2,10 +2,19 @@
 #define __BLOCK_H__
 
 // system includes
+#include <array>
 #include <bit>
 #include <cstdint>
+#include <vector>
 
 namespace Block {
+
+#define BLOCK_VERSION_1 0x00000001
+#define BLOCK_VERSION_2 0x00000002 // reference: BIP34
+#define BLOCK_VERSION_3 0x00000003 // reference: BIP66
+#define BLOCK_VERSION_4 0x00000004 // reference: BIP65
+
+using Hash = std::array<unsigned char, 32>;
 
 class Block {
 public:
@@ -16,6 +25,38 @@ public:
   /// \brief Destructor.
   ~Block();
 
+  // Setters
+  /// \brief Set the block version.
+  /// \param version 32-bit version number to store in the block.
+  void setVersion(uint32_t version);
+
+  /// \brief Set the previous block hash.
+  /// \param prev_block_hash 32-byte array containing the previous block hash.
+  /// \note The data is copied into the block's internal buffer.
+  void setPrevBlockHash(const Hash &prev_block_hash);
+
+  /// \brief Set the Merkle root.
+  /// \param merkle_root 32-byte array containing the Merkle root.
+  /// \note The data is copied into the block's internal buffer.
+  void setMerkleRoot(const Hash &merkle_root);
+
+  /// \brief Compute the Merkle root from a list of transaction hashes.
+  /// \param tx_hashes Vector of 32-byte transaction hashes.
+  /// \return 32-byte buffer containing the computed Merkle root.
+  Hash createMerkleRoot(const std::vector<Hash> &tx_hashes);
+
+  /// \brief Set the block timestamp.
+  /// \param timestamp 32-bit UNIX epoch timestamp to store in the block.
+  void setTimestamp(uint32_t timestamp);
+
+  /// \brief Set the encoded difficulty target (bits).
+  /// \param bits 32-bit bits field to store in the block.
+  void setBits(uint32_t bits);
+
+  /// \brief Set the block nonce.
+  /// \param nonce 32-bit nonce value to store in the block.
+  void setNonce(uint32_t nonce);
+
   // Getters
   /// \brief Get the block version.
   /// \return 32-bit version number.
@@ -23,11 +64,11 @@ public:
 
   /// \brief Get pointer to the previous block hash (32 bytes).
   /// \return Pointer to a 32-byte array containing the previous block hash.
-  const uint8_t *getPrevBlockHash() const;
+  const Hash getPrevBlockHash() const;
 
   /// \brief Get pointer to the Merkle root (32 bytes).
   /// \return Pointer to a 32-byte array containing the Merkle root.
-  const uint8_t *getMerkleRoot() const;
+  const Hash getMerkleRoot() const;
 
   /// \brief Get the block timestamp.
   /// \return 32-bit UNIX epoch timestamp.
@@ -41,27 +82,20 @@ public:
   /// \return 32-bit nonce value.
   uint32_t getNonce() const;
 
-  /// \brief Convert a 32-bit value from big-endian to little-endian in place.
-  /// \param bigEndianValue Reference to the 32-bit value (interpreted as
-  /// big-endian).
-  /// \note The value is replaced with its little-endian representation.
-  inline void convertBigEndianToLittleEndian(uint32_t &bigEndianValue) {
-    bigEndianValue = std::byteswap(bigEndianValue);
-  }
+  /// \brief Convert a 32-bit value either little-endian to big-endian in place.
+  /// \param value Reference to the 32-bit value
+  /// \note The value is replaced with its reverse representation.
+  static inline void swap32(uint32_t &value) { value = std::byteswap(value); }
 
-  /// \brief Convert a 32-bit value from little-endian to big-endian in place.
-  /// \param littleEndianValue Reference to the 32-bit value (interpreted as
-  /// little-endian).
-  /// \note The value is replaced with its big-endian representation.
-  inline void convertLittleEndianToBigEndian(uint32_t &littleEndianValue) {
-    littleEndianValue = std::byteswap(littleEndianValue);
-  }
+  // Helper function to compute double SHA-256 of two concatenated hashes
+  Hash doubleSHA256(const Hash &left, const Hash &right);
+  std::vector<Hash> recursiveMerkleCompute(const std::vector<Hash> &hashes);
 
 private:
   // Block data members
   uint32_t mVersion;
-  uint8_t mPrevBlockHash[32];
-  uint8_t mMerkleRoot[32];
+  Hash mPrevBlockHash;
+  Hash mMerkleRoot;
   uint32_t mTimestamp;
   uint32_t mBits;
   uint32_t mNonce;
