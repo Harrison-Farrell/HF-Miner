@@ -1,0 +1,47 @@
+name: Memory Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  memcheck:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake ninja-build valgrind
+    
+    - name: Configure CMake with Memcheck
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja -DENABLE_MEMCHECK=ON -DENABLE_UNIT_TESTING=ON
+    
+    - name: Build
+      run: cmake --build build
+    
+    - name: Run SHA256 Memory Check
+      run: |
+        cd build
+        cmake --build . --target memcheck-test_sha256
+      continue-on-error: true
+    
+    - name: Run Block Memory Check
+      run: |
+        cd build
+        cmake --build . --target memcheck-test_block
+      continue-on-error: true
+    
+    - name: Upload memcheck reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: memcheck-reports
+        path: build/valgrind-*/
+        retention-days: 30
