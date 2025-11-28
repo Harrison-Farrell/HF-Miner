@@ -1,4 +1,9 @@
 function(Format target directory)
+	if(NOT ENABLE_FORMAT)
+		message(STATUS "Code formatting not enabled. Formatting will be skipped.")
+		return()
+	endif()
+	
 	find_program(CLANG-FORMAT_PATH
 		clang-format REQUIRED
 		PATHS "${CLANG-FORMAT_INSTALL_DIR}"

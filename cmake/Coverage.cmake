@@ -1,4 +1,9 @@
 function(EnableCoverage target)
+	if(NOT ENABLE_COVERAGE)
+		message(STATUS "Coverage not enabled. Coverage analysis will be skipped.")
+		return()
+	endif()
+	
 	if(CMAKE_BUILD_TYPE STREQUAL Debug)
 		if(APPLE)
 			target_compile_options(${target}
@@ -26,6 +31,11 @@ function(CleanCoverage target)
 endfunction()
 
 function(AddCoverage target)
+	if(NOT ENABLE_COVERAGE)
+		message(STATUS "Coverage not enabled. Coverage target will not be created.")
+		return()
+	endif()
+	
 	if(APPLE)
 		find_program(LLVM_COV_PATH llvm-cov REQUIRED)
 		find_program(LLVM_PROFDATA_PATH llvm-profdata REQUIRED)
@@ -33,19 +43,19 @@ function(AddCoverage target)
 			COMMAND $<TARGET_FILE:${target}>
 			COMMAND rm -rf coverage
 			COMMAND ${LLVM_PROFDATA_PATH} merge
-									-sparse default.profraw -o default.profdata
+								-sparse default.profraw -o default.profdata
 			COMMAND ${LLVM_COV_PATH} show $<TARGET_FILE:${target}>
-									-instr-profile=default.profdata
-									-show-line-counts-or-regions
-									-use-color
-									-show-instantiation-summary
-									-show-branches=count
-									-format=html
-									-output-dir=coverage-${target}
+								-instr-profile=default.profdata
+								-show-line-counts-or-regions
+								-use-color
+								-show-instantiation-summary
+								-show-branches=count
+								-format=html
+								-output-dir=coverage-${target}
 			COMMAND ${LLVM_COV_PATH} report $<TARGET_FILE:${target}>
-									-instr-profile=default.profdata
-									-show-region-summary=false
-									-show-branch-summary=false
+								-instr-profile=default.profdata
+								-show-region-summary=false
+								-show-branch-summary=false
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		)
 	elseif(UNIX)
@@ -56,9 +66,9 @@ function(AddCoverage target)
 			COMMAND $<TARGET_FILE:${target}>
 			COMMAND ${LCOV_PATH} -d . --capture -o coverage.info
 			COMMAND ${LCOV_PATH} -r coverage.info '/usr/include/*'
-								 -o filtered.info --ignore-errors unused
+							 -o filtered.info --ignore-errors unused
 			COMMAND ${GENHTML_PATH} -o coverage-${target}
-									filtered.info --legend
+								filtered.info --legend
 			COMMAND rm -rf coverage.info filtered.info
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		)
@@ -69,19 +79,19 @@ function(AddCoverage target)
 			COMMAND $<TARGET_FILE:${target}>
 			COMMAND del coverage /S /Q
 			COMMAND ${LLVM_PROFDATA_PATH} merge
-									-sparse default.profraw -o default.profdata
+								-sparse default.profraw -o default.profdata
 			COMMAND ${LLVM_COV_PATH} show $<TARGET_FILE:${target}>
-									-instr-profile=default.profdata
-									-show-line-counts-or-regions
-									-use-color
-									-show-instantiation-summary
-									-show-branches=count
-									-format=html
-									-output-dir=coverage-${target}
+								-instr-profile=default.profdata
+								-show-line-counts-or-regions
+								-use-color
+								-show-instantiation-summary
+								-show-branches=count
+								-format=html
+								-output-dir=coverage-${target}
 			COMMAND ${LLVM_COV_PATH} report $<TARGET_FILE:${target}>
-									-instr-profile=default.profdata
-									-show-region-summary=false
-									-show-branch-summary=false
+								-instr-profile=default.profdata
+								-show-region-summary=false
+								-show-branch-summary=false
 			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 		)
 	endif()

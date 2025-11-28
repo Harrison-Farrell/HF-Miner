@@ -19,7 +19,7 @@ jobs:
         sudo apt-get install -y build-essential cmake ninja-build cppcheck clang-format
     
     - name: Configure CMake
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja -DENABLE_CPPCHECK=ON -DENABLE_FORMAT=ON -DENABLE_UNIT_TESTING=ON
     
     - name: Run cppcheck
       run: |

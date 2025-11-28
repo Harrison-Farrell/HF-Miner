@@ -1,18 +1,25 @@
-find_package(Doxygen
-	REQUIRED dot
-	OPTIONAL_COMPONENTS mscgen dia
-)
+if(ENABLE_DOXYGEN)
+	find_package(Doxygen
+		REQUIRED dot
+		OPTIONAL_COMPONENTS mscgen dia
+	)
 
-include(FetchContent)
-FetchContent_Declare(
-	doxygen_awesome_css
-	GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css.git
-	GIT_TAG v2.4.1
-	GIT_SHALLOW 1
-)
-FetchContent_MakeAvailable(doxygen_awesome_css)
+	include(FetchContent)
+	FetchContent_Declare(
+		doxygen_awesome_css
+		GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css.git
+		GIT_TAG v2.4.1
+		GIT_SHALLOW 1
+	)
+	FetchContent_MakeAvailable(doxygen_awesome_css)
+endif()
 
 function(Doxygen target input)
+	if(NOT ENABLE_DOXYGEN)
+		message(STATUS "Doxygen not enabled. Documentation generation will be skipped.")
+		return()
+	endif()
+	
 	set(NAME "doxygen-${target}")
 	set(DOXYGEN_EXTRACT_ALL           YES)
 	set(DOXYGEN_EXTRACT_PRIVATE       YES)

@@ -38,7 +38,7 @@ jobs:
       shell: powershell
     
     - name: Configure CMake
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -G Ninja
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -G Ninja -DENABLE_UNIT_TESTING=ON
     
     - name: Build
       run: cmake --build build --config ${{ matrix.build-type }}
@@ -74,7 +74,7 @@ jobs:
         sudo apt-get install -y build-essential cmake ninja-build lcov
     
     - name: Configure CMake with Coverage
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja -DENABLE_COVERAGE=ON
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja -DENABLE_COVERAGE=ON -DENABLE_UNIT_TESTING=ON
     
     - name: Build
       run: cmake --build build
