@@ -1,0 +1,41 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake ninja-build cppcheck clang-format
+    
+    - name: Configure CMake
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -G Ninja
+    
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --suppress=missingIncludeSystem src/ test/ benchmark/ || true
+    
+    - name: Check code formatting with clang-format
+      run: |
+        # Find all C++ files and check formatting
+        find src test benchmark -name "*.cpp" -o -name "*.h" | while read file; do
+          clang-format --dry-run -Werror "$file" || echo "Formatting issues in $file"
+        done || true
+    
+    - name: Build
+      run: cmake --build build --config Debug
+    
+    - name: Run tests
+      run: |
+        cd build
+        ctest --build-config Debug --output-on-failure
