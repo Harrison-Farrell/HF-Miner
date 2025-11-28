@@ -1,12 +1,19 @@
-include(FetchContent)
-FetchContent_Declare(
+if(ENABLE_MEMCHECK)
+	include(FetchContent)
+	FetchContent_Declare(
 	memcheck-cover
 	GIT_REPOSITORY https://github.com/Farigh/memcheck-cover.git
 	GIT_TAG release-1.2
-)
-FetchContent_MakeAvailable(memcheck-cover)
+	)
+	FetchContent_MakeAvailable(memcheck-cover)
+endif()
 
 function(AddMemcheck target)
+	if(NOT ENABLE_MEMCHECK)
+		message(STATUS "Memory checking not enabled. Memcheck target will not be created.")
+		return()
+	endif()
+	
 	if(UNIX)
 		set(MEMCHECK_PATH ${memcheck-cover_SOURCE_DIR}/bin)
 		set(REPORT_PATH "${CMAKE_BINARY_DIR}/valgrind-${target}")

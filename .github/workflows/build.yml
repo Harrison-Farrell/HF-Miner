@@ -1,0 +1,68 @@
+name: Multi-Platform Build
+
+on:
+  push:
+    branches: [ main, develop, feature/* ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build-type: [Debug, Release]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake ninja-build
+    
+    - name: Configure CMake
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -G Ninja
+    
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build-type }}
+
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        build-type: [Debug, Release]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install CMake and Ninja
+      run: |
+        choco install cmake ninja -y
+      shell: powershell
+    
+    - name: Configure CMake
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -G Ninja
+      shell: powershell
+    
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build-type }}
+      shell: powershell
+
+  build-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        build-type: [Debug, Release]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: brew install cmake ninja
+    
+    - name: Configure CMake
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build-type }} -G Ninja
+    
+    - name: Build
+      run: cmake --build build --config ${{ matrix.build-type }}

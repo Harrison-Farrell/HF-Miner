@@ -1,0 +1,22 @@
+# GitHub Actions Workflow Configuration
+
+This directory contains GitHub Actions CI/CD workflow definitions.
+
+## Files
+
+- **ci.yml** - Comprehensive multi-platform build and test workflow
+- **test.yml** - Quick unit test execution (fast feedback)
+- **build.yml** - Multi-platform build verification
+- **quality.yml** - Code quality and static analysis checks
+- **README.md** - Workflow documentation and setup guide
+
+## Important Notes
+
+- Workflows are automatically triggered based on push/PR events defined in each YAML file
+- All workflows use publicly available actions from GitHub Marketplace
+- No sensitive data should be stored in workflow files; use GitHub Secrets for credentials
+- Coverage reports are uploaded to Codecov (update token in quality.yml if needed)
+
+## Monitoring Workflows
+
+View workflow runs at: https://github.com/Harrison-Farrell/HF-Miner/actions

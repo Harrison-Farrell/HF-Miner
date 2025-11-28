@@ -1,4 +1,9 @@
 function(AddCppcheck target)
+	if(NOT ENABLE_CPPCHECK)
+		message(STATUS "Cppcheck not enabled. Static analysis will be skipped.")
+		return()
+	endif()
+	
 	find_program(CPPCHECK_PATH cppcheck REQUIRED PATHS "${CPPCHECK_INSTALL_DIR}")
 	set_target_properties(${target}
 		PROPERTIES CXX_CPPCHECK

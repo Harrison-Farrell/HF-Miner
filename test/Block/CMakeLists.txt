@@ -9,4 +9,4 @@ target_link_libraries(test_block
 
 Format(test_block ${CMAKE_CURRENT_SOURCE_DIR})
 AddGTests(test_block)
-EnableCoverage(HFM::Block)
+EnableCoverage(Block)
