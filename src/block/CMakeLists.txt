@@ -1,10 +1,10 @@
-set(library_name Block)
+set(library_name block)
 
 add_library(${library_name} STATIC block.cpp)
 add_library(HFM::${library_name} ALIAS ${library_name})
 
 target_link_libraries(${library_name}
-	PRIVATE HFM::SHA256
+	PRIVATE HFM::sha256
 )
 
 target_compile_options(${library_name}

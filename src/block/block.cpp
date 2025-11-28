@@ -1,11 +1,11 @@
-#include "Block/block.h"
+#include "block/block.h"
 
 // system includes
 #include <algorithm>
 #include <vector>
 
 // project includes
-#include <SHA256/sha256.h>
+#include "sha256/sha256.h"
 
 Block::Block::Block() : mVersion(0), mTimestamp(0), mBits(0), mNonce(0) {
   // Initialize previous block hash and Merkle root to zeros
