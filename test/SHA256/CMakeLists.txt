@@ -3,9 +3,9 @@ add_executable(test_sha256
 )
 
 target_link_libraries(test_sha256
-	PRIVATE sha256_obj
+	PRIVATE HFM::SHA256
 )
 
 Format(test_sha256 ${CMAKE_CURRENT_SOURCE_DIR})
 AddGTests(test_sha256)
-EnableCoverage(sha256_obj)
+EnableCoverage(HFM::SHA256)

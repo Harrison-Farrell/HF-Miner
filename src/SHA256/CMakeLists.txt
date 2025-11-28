@@ -1,36 +1,24 @@
-add_library(sha256_obj OBJECT
-	sha256.cpp
-)
+set(library_name SHA256)
 
-target_compile_options(sha256_obj
+add_library(${library_name} STATIC sha256.cpp)
+add_library(HFM::${library_name} ALIAS ${library_name})
+
+target_compile_options(${library_name}
 	PRIVATE ${DEFAULT_CXX_COMPILE_FLAGS}
 	PRIVATE ${DEFAULT_CXX_OPTIMIZE_FLAG}
 )
 
-target_include_directories(sha256_obj
+target_include_directories(${library_name}
 	PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+	PUBLIC "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
 )
 
-set_target_properties(sha256_obj PROPERTIES
-	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/SHA256/sha256.h
+set_target_properties(${library_name} PROPERTIES
+	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/${library_name}/sha256.h
 	POSITION_INDEPENDENT_CODE 1
 )
 
-add_library(sha256_shared SHARED)
-target_link_libraries(sha256_shared sha256_obj)
-set_target_properties(sha256_shared PROPERTIES
-	PREFIX "lib"
-	OUTPUT_NAME "HF-Miner$<$<CONFIG:Debug>:d>"
-)
-
-add_library(sha256_static STATIC)
-target_link_libraries(sha256_static sha256_obj)
-set_target_properties(sha256_static PROPERTIES
-	PREFIX "lib"
-	OUTPUT_NAME "HF-Miner$<$<CONFIG:Debug>:d>"
-)
-
-CleanCoverage(sha256_static)
-Format(sha256_static .)
-AddCppcheck(sha256_static)
-Doxygen(sha256_static SHA256)
+CleanCoverage(${library_name})
+Format(${library_name} .)
+AddCppcheck(${library_name})
+Doxygen(${library_name} ${library_name})
