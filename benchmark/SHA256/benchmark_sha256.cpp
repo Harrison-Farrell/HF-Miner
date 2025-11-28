@@ -1,9 +1,12 @@
-#include <SHA256/sha256.h>
-#include <benchmark/benchmark.h>
+#include "sha256/sha256.h"
 
+// system includes
 #include <cstring>
 #include <string>
 #include <vector>
+
+// library includes
+#include <benchmark/benchmark.h>
 
 // Benchmark: compute hex digest for small input
 static void BM_sha256_hex_small(benchmark::State &state) {

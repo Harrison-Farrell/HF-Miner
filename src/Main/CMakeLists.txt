@@ -9,6 +9,6 @@ target_compile_options(${executable_name}
 
 target_link_libraries(${executable_name}
 	PRIVATE 
-	HFM::SHA256
-	HFM::Block
+	HFM::sha256
+	HFM::block
 )

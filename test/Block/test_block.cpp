@@ -2,8 +2,8 @@
 #include <gtest/gtest.h>
 
 // project includes
-#include <Block/block.h>
-#include <SHA256/sha256.h>
+#include "block/block.h"
+#include "sha256/sha256.h"
 
 static void compute_sha256(const uint8_t *in, size_t len, uint8_t out[32]) {
   SHA256::sha256_bytes(in, len, out);

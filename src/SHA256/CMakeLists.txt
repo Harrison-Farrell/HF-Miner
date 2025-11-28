@@ -1,4 +1,4 @@
-set(library_name SHA256)
+set(library_name sha256)
 
 add_library(${library_name} STATIC sha256.cpp)
 add_library(HFM::${library_name} ALIAS ${library_name})

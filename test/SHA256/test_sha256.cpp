@@ -9,7 +9,7 @@
 #include <gtest/gtest.h>
 
 // project includes
-#include <SHA256/sha256.h>
+#include "sha256/sha256.h"
 
 struct TestVector {
   std::string name;
