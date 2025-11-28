@@ -65,7 +65,7 @@ TEST(SHA256_OneShot, Bytes_StandardVectors) {
 
 TEST(SHA256_Streaming, Fragmentation_Consistency) {
   // Ensure hashing "abc" in one go is same as "a" + "b" + "c"
-  struct SHA256::sha256 ctx;
+  SHA256::sha256 ctx;
   char output[SHA256_HEX_SIZE];
 
   SHA256::sha256_init(&ctx);
@@ -81,7 +81,7 @@ TEST(SHA256_Streaming, Fragmentation_Consistency) {
 
 TEST(SHA256_Streaming, ContextReuse) {
   // Ensure calling init() on a dirty struct resets it correctly
-  struct SHA256::sha256 ctx;
+  SHA256::sha256 ctx;
   char output[SHA256_HEX_SIZE];
 
   // First usage
@@ -101,7 +101,7 @@ TEST(SHA256_Streaming, ContextReuse) {
 }
 
 TEST(SHA256_Streaming, FinalizeBytes_Works) {
-  struct SHA256::sha256 ctx;
+  SHA256::sha256 ctx;
   uint8_t output[SHA256_BYTES_SIZE];
 
   SHA256::sha256_init(&ctx);
@@ -218,4 +218,159 @@ TEST(SHA256_Conversation, BytesToHex) {
 
   std::string result_hex = SHA256::hashArrayToString(input);
   EXPECT_EQ(result_hex, expected_hex);
+}
+
+// Direct test coverage for sha256_init
+TEST(SHA256_Functions, Init_InitializesStateCorrectly) {
+  SHA256::sha256 ctx;
+  SHA256::sha256_init(&ctx);
+
+  // Verify initial state values match SHA256 constants
+  EXPECT_EQ(ctx.state[0], 0x6a09e667);
+  EXPECT_EQ(ctx.state[1], 0xbb67ae85);
+  EXPECT_EQ(ctx.state[2], 0x3c6ef372);
+  EXPECT_EQ(ctx.state[3], 0xa54ff53a);
+  EXPECT_EQ(ctx.state[4], 0x510e527f);
+  EXPECT_EQ(ctx.state[5], 0x9b05688c);
+  EXPECT_EQ(ctx.state[6], 0x1f83d9ab);
+  EXPECT_EQ(ctx.state[7], 0x5be0cd19);
+  EXPECT_EQ(ctx.n_bits, 0);
+  EXPECT_EQ(ctx.buffer_counter, 0);
+}
+
+// Direct test coverage for sha256_append
+TEST(SHA256_Functions, Append_AccumulatesBits) {
+  SHA256::sha256 ctx;
+  SHA256::sha256_init(&ctx);
+
+  // Append 5 bytes
+  SHA256::sha256_append(&ctx, "hello", 5);
+  EXPECT_EQ(ctx.n_bits, 5 * 8); // 40 bits
+
+  // Append 4 more bytes
+  SHA256::sha256_append(&ctx, "test", 4);
+  EXPECT_EQ(ctx.n_bits, 9 * 8); // 72 bits
+}
+
+// Direct test coverage for sha256_finalize_hex
+TEST(SHA256_Functions, FinalizeHex_ProducesCorrectOutput) {
+  SHA256::sha256 ctx;
+  char output[SHA256_HEX_SIZE];
+
+  SHA256::sha256_init(&ctx);
+  SHA256::sha256_append(&ctx, "test", 4);
+  SHA256::sha256_finalize_hex(&ctx, output);
+
+  // Verified via PowerShell and system hash functions
+  const char *expected =
+      "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+  EXPECT_STREQ(output, expected);
+  EXPECT_EQ(output[64], '\0');
+}
+
+// Direct test coverage for sha256_finalize_bytes
+TEST(SHA256_Functions, FinalizeBytes_ProducesCorrectOutput) {
+  SHA256::sha256 ctx;
+  uint8_t output[SHA256_BYTES_SIZE];
+
+  SHA256::sha256_init(&ctx);
+  SHA256::sha256_append(&ctx, "test", 4);
+  SHA256::sha256_finalize_bytes(&ctx, output);
+
+  // Verified via PowerShell and system hash functions
+  std::string hex_result = bytes_to_hex_string(output, SHA256_BYTES_SIZE);
+  const char *expected =
+      "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+  EXPECT_STREQ(hex_result.c_str(), expected);
+}
+
+// Direct test coverage for sha256_hex
+TEST(SHA256_Functions, Sha256Hex_ProducesCorrectOutput) {
+  char output[SHA256_HEX_SIZE];
+  SHA256::sha256_hex("test", 4, output);
+
+  const char *expected =
+      "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+  EXPECT_STREQ(output, expected);
+  EXPECT_EQ(output[64], '\0');
+}
+
+// Direct test coverage for sha256_bytes
+TEST(SHA256_Functions, Sha256Bytes_ProducesCorrectOutput) {
+  uint8_t output[SHA256_BYTES_SIZE];
+  SHA256::sha256_bytes("test", 4, output);
+
+  std::string hex_result = bytes_to_hex_string(output, SHA256_BYTES_SIZE);
+  const char *expected =
+      "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
+  EXPECT_STREQ(hex_result.c_str(), expected);
+}
+
+// Direct test coverage for hashStringToArray
+TEST(SHA256_Functions, HashStringToArray_ConvertsCorrectly) {
+  std::string hex =
+      "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+  SHA256::Hash result = SHA256::hashStringToArray(hex);
+
+  // Verify first and last bytes
+  EXPECT_EQ(result[0], 0x01);
+  EXPECT_EQ(result[31], 0xef);
+
+  // Verify full conversion
+  std::string roundtrip = SHA256::hashArrayToString(result);
+  EXPECT_EQ(roundtrip, hex);
+}
+
+// Direct test coverage for hashArrayToString
+TEST(SHA256_Functions, HashArrayToString_ConvertsCorrectly) {
+  SHA256::Hash input;
+  input.fill(0x00);
+  input[0] = 0xFF;
+  input[15] = 0xAB;
+  input[31] = 0xCD;
+
+  std::string hex = SHA256::hashArrayToString(input);
+
+  // Verify format
+  EXPECT_EQ(hex.length(), 64);
+  EXPECT_EQ(hex[0], 'f');
+  EXPECT_EQ(hex[1], 'f');
+  EXPECT_EQ(hex[30], 'a');
+  EXPECT_EQ(hex[31], 'b');
+  EXPECT_EQ(hex[62], 'c');
+  EXPECT_EQ(hex[63], 'd');
+}
+
+// Test hashStringToArray with invalid input
+TEST(SHA256_Functions, HashStringToArray_ThrowsOnInvalidLength) {
+  std::string short_hex = "0123456789abcdef";
+  EXPECT_THROW(SHA256::hashStringToArray(short_hex), std::invalid_argument);
+
+  std::string long_hex(100, '0');
+  EXPECT_THROW(SHA256::hashStringToArray(long_hex), std::invalid_argument);
+}
+
+// Test empty string handling
+TEST(SHA256_Functions, Sha256Hex_EmptyString) {
+  char output[SHA256_HEX_SIZE];
+  SHA256::sha256_hex("", 0, output);
+
+  const char *expected =
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+  EXPECT_STREQ(output, expected);
+}
+
+// Test large input handling
+TEST(SHA256_Functions, Sha256Hex_LargeInput) {
+  std::vector<uint8_t> large_input(10000, 0xAA);
+  char output[SHA256_HEX_SIZE];
+
+  SHA256::sha256_hex(large_input.data(), large_input.size(), output);
+
+  // Should produce a valid 64-char hex string
+  EXPECT_EQ(output[64], '\0');
+  for (int i = 0; i < 64; ++i) {
+    char c = output[i];
+    EXPECT_TRUE((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'));
+  }
 }

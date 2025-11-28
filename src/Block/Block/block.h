@@ -28,17 +28,21 @@ public:
   // Setters
   /// \brief Set the block version.
   /// \param version 32-bit version number to store in the block.
-  void setVersion(uint32_t version);
+  inline void setVersion(uint32_t version) { mVersion = version; }
 
   /// \brief Set the previous block hash.
   /// \param prev_block_hash 32-byte array containing the previous block hash.
   /// \note The data is copied into the block's internal buffer.
-  void setPrevBlockHash(const Hash &prev_block_hash);
+  inline void setPrevBlockHash(const Hash &prev_block_hash) {
+    mPrevBlockHash = prev_block_hash;
+  }
 
   /// \brief Set the Merkle root.
   /// \param merkle_root 32-byte array containing the Merkle root.
   /// \note The data is copied into the block's internal buffer.
-  void setMerkleRoot(const Hash &merkle_root);
+  inline void setMerkleRoot(const Hash &merkle_root) {
+    mMerkleRoot = merkle_root;
+  }
 
   /// \brief Compute the Merkle root from a list of transaction hashes.
   /// \param tx_hashes Vector of 32-byte transaction hashes.
@@ -47,40 +51,40 @@ public:
 
   /// \brief Set the block timestamp.
   /// \param timestamp 32-bit UNIX epoch timestamp to store in the block.
-  void setTimestamp(uint32_t timestamp);
+  inline void setTimestamp(uint32_t timestamp) { mTimestamp = timestamp; }
 
   /// \brief Set the encoded difficulty target (bits).
   /// \param bits 32-bit bits field to store in the block.
-  void setBits(uint32_t bits);
+  inline void setBits(uint32_t bits) { mBits = bits; }
 
   /// \brief Set the block nonce.
   /// \param nonce 32-bit nonce value to store in the block.
-  void setNonce(uint32_t nonce);
+  inline void setNonce(uint32_t nonce) { mNonce = nonce; }
 
   // Getters
   /// \brief Get the block version.
   /// \return 32-bit version number.
-  uint32_t getVersion() const;
+  inline uint32_t getVersion() const { return mVersion; }
 
   /// \brief Get pointer to the previous block hash (32 bytes).
   /// \return Pointer to a 32-byte array containing the previous block hash.
-  const Hash getPrevBlockHash() const;
+  inline const Hash getPrevBlockHash() const { return mPrevBlockHash; }
 
   /// \brief Get pointer to the Merkle root (32 bytes).
   /// \return Pointer to a 32-byte array containing the Merkle root.
-  const Hash getMerkleRoot() const;
+  inline const Hash getMerkleRoot() const { return mMerkleRoot; }
 
   /// \brief Get the block timestamp.
   /// \return 32-bit UNIX epoch timestamp.
-  uint32_t getTimestamp() const;
+  inline uint32_t getTimestamp() const { return mTimestamp; }
 
   /// \brief Get the encoded difficulty target (bits).
   /// \return 32-bit bits field.
-  uint32_t getBits() const;
+  inline uint32_t getBits() const { return mBits; }
 
   /// \brief Get the block nonce.
   /// \return 32-bit nonce value.
-  uint32_t getNonce() const;
+  inline uint32_t getNonce() const { return mNonce; }
 
   /// \brief Convert a 32-bit value either little-endian to big-endian in place.
   /// \param value Reference to the 32-bit value

@@ -15,35 +15,6 @@ Block::Block::Block() : mVersion(0), mTimestamp(0), mBits(0), mNonce(0) {
 
 Block::Block::~Block() {}
 
-void Block::Block::setPrevBlockHash(const Hash &prev_block_hash) {
-  mPrevBlockHash = prev_block_hash;
-}
-void Block::Block::setMerkleRoot(const Hash &merkle_root) {
-  mMerkleRoot = merkle_root;
-}
-
-void Block::Block::setVersion(uint32_t version) { mVersion = version; }
-
-void Block::Block::setTimestamp(uint32_t timestamp) { mTimestamp = timestamp; }
-
-void Block::Block::setBits(uint32_t bits) { mBits = bits; }
-
-void Block::Block::setNonce(uint32_t nonce) { mNonce = nonce; }
-
-uint32_t Block::Block::getVersion() const { return mVersion; }
-
-const Block::Hash Block::Block::getPrevBlockHash() const {
-  return mPrevBlockHash;
-}
-
-const Block::Hash Block::Block::getMerkleRoot() const { return mMerkleRoot; }
-
-uint32_t Block::Block::getTimestamp() const { return mTimestamp; }
-
-uint32_t Block::Block::getBits() const { return mBits; }
-
-uint32_t Block::Block::getNonce() const { return mNonce; }
-
 Block::Hash Block::Block::doubleSHA256(const Hash &left, const Hash &right) {
   uint8_t concat[64];
   std::copy(left.begin(), left.end(), concat);

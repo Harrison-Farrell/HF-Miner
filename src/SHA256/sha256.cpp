@@ -38,9 +38,9 @@ static inline void update_w(uint32_t *w, int i, const uint8_t *buffer) {
   }
 }
 
-static void sha256_block(struct SHA256::sha256 *sha) {
+void SHA256::sha256_block(SHA256::Context *ctx) {
   // State of the program
-  uint32_t *state = sha->state;
+  uint32_t *state = ctx->state;
 
   // Declare the K constant
   static const uint32_t k[8 * 8] = {
@@ -70,7 +70,7 @@ static void sha256_block(struct SHA256::sha256 *sha) {
 
   int i, j;
   for (i = 0; i < 64; i += 16) {
-    update_w(w, i, sha->buffer);
+    update_w(w, i, ctx->buffer);
 
     for (j = 0; j < 16; j += 4) {
       uint32_t temp;
@@ -98,64 +98,62 @@ static void sha256_block(struct SHA256::sha256 *sha) {
   state[6] += g;
   state[7] += h;
 }
-} // namespace SHA256
 
-void SHA256::sha256_init(struct SHA256::sha256 *sha) {
-  sha->state[0] = 0x6a09e667;
-  sha->state[1] = 0xbb67ae85;
-  sha->state[2] = 0x3c6ef372;
-  sha->state[3] = 0xa54ff53a;
-  sha->state[4] = 0x510e527f;
-  sha->state[5] = 0x9b05688c;
-  sha->state[6] = 0x1f83d9ab;
-  sha->state[7] = 0x5be0cd19;
-  sha->n_bits = 0;
-  sha->buffer_counter = 0;
+void SHA256::init(Context &ctx) {
+  ctx.state[0] = 0x6a09e667;
+  ctx.state[1] = 0xbb67ae85;
+  ctx.state[2] = 0x3c6ef372;
+  ctx.state[3] = 0xa54ff53a;
+  ctx.state[4] = 0x510e527f;
+  ctx.state[5] = 0x9b05688c;
+  ctx.state[6] = 0x1f83d9ab;
+  ctx.state[7] = 0x5be0cd19;
+  ctx.n_bits = 0;
+  ctx.buffer_counter = 0;
 }
 
-void sha256_append_byte(struct SHA256::sha256 *sha, uint8_t byte) {
-  sha->buffer[sha->buffer_counter++] = byte;
-  sha->n_bits += 8;
+void SHA256::sha256_append_byte(Context *ctx, uint8_t byte) {
+  ctx->buffer[ctx->buffer_counter++] = byte;
+  ctx->n_bits += 8;
 
-  if (sha->buffer_counter == 64) {
-    sha->buffer_counter = 0;
-    sha256_block(sha);
+  if (ctx->buffer_counter == 64) {
+    ctx->buffer_counter = 0;
+    sha256_block(ctx);
   }
 }
 
-void SHA256::sha256_append(struct sha256 *sha, const void *src,
-                           size_t n_bytes) {
+void SHA256::append(Context &ctx, const void *src, size_t n_bytes) {
   const uint8_t *bytes = (const uint8_t *)src;
   size_t i;
 
   for (i = 0; i < n_bytes; i++) {
-    sha256_append_byte(sha, bytes[i]);
+    sha256_append_byte(&ctx, bytes[i]);
   }
 }
 
-void sha256_finalize(struct SHA256::sha256 *sha) {
+void SHA256::sha256_finalize(Context *ctx) {
   int i;
-  uint64_t n_bits = sha->n_bits;
+  uint64_t n_bits = ctx->n_bits;
 
-  sha256_append_byte(sha, 0x80);
+  sha256_append_byte(ctx, 0x80);
 
-  while (sha->buffer_counter != 56) {
-    sha256_append_byte(sha, 0);
+  while (ctx->buffer_counter != 56) {
+    sha256_append_byte(ctx, 0);
   }
 
   for (i = 7; i >= 0; i--) {
     uint8_t byte = (n_bits >> 8 * i) & 0xff;
-    sha256_append_byte(sha, byte);
+    sha256_append_byte(ctx, byte);
   }
 }
 
-void SHA256::sha256_finalize_hex(struct SHA256::sha256 *sha, char *dst_hex65) {
+void SHA256::finalize_hex(Context &ctx, char *dst_hex65) {
   int i, j;
-  sha256_finalize(sha);
+  sha256_finalize(&ctx);
 
   for (i = 0; i < 8; i++) {
     for (j = 7; j >= 0; j--) {
-      uint8_t nibble = (sha->state[i] >> j * 4) & 0xf;
+      uint8_t nibble = (ctx.state[i] >> j * 4) & 0xf;
       *dst_hex65++ = "0123456789abcdef"[nibble];
     }
   }
@@ -163,34 +161,33 @@ void SHA256::sha256_finalize_hex(struct SHA256::sha256 *sha, char *dst_hex65) {
   *dst_hex65 = '\0';
 }
 
-void SHA256::sha256_finalize_bytes(struct SHA256::sha256 *sha,
-                                   void *dst_bytes32) {
+void SHA256::finalize_bytes(Context &ctx, void *dst_bytes32) {
   uint8_t *ptr = (uint8_t *)dst_bytes32;
   int i, j;
-  sha256_finalize(sha);
+  sha256_finalize(&ctx);
 
   for (i = 0; i < 8; i++) {
     for (j = 3; j >= 0; j--) {
-      *ptr++ = (sha->state[i] >> j * 8) & 0xff;
+      *ptr++ = (ctx.state[i] >> j * 8) & 0xff;
     }
   }
 }
 
-void SHA256::sha256_hex(const void *src, size_t n_bytes, char *dst_hex65) {
-  struct SHA256::sha256 sha;
-  SHA256::sha256_init(&sha);
-  SHA256::sha256_append(&sha, src, n_bytes);
-  SHA256::sha256_finalize_hex(&sha, dst_hex65);
+void SHA256::hex(const void *src, size_t n_bytes, char *dst_hex65) {
+  Context ctx;
+  init(ctx);
+  append(ctx, src, n_bytes);
+  finalize_hex(ctx, dst_hex65);
 }
 
-void SHA256::sha256_bytes(const void *src, size_t n_bytes, void *dst_bytes32) {
-  struct SHA256::sha256 sha;
-  SHA256::sha256_init(&sha);
-  SHA256::sha256_append(&sha, src, n_bytes);
-  SHA256::sha256_finalize_bytes(&sha, dst_bytes32);
+void SHA256::bytes(const void *src, size_t n_bytes, void *dst_bytes32) {
+  Context ctx;
+  init(ctx);
+  append(ctx, src, n_bytes);
+  finalize_bytes(ctx, dst_bytes32);
 }
 
-SHA256::Hash SHA256::hashStringToArray(const std::string &hex_string) {
+Hash SHA256::hashStringToArray(const std::string &hex_string) {
   // A full SHA-256 hex string is 64 characters long (32 bytes * 2 hex
   // chars/byte).
   if (hex_string.length() != 64) {
@@ -198,7 +195,7 @@ SHA256::Hash SHA256::hashStringToArray(const std::string &hex_string) {
         "Input string must be 64 characters long for SHA-256.");
   }
 
-  SHA256::Hash bytes;
+  Hash bytes;
 
   // Process two characters at a time
   for (size_t i = 0; i < 32; ++i) {
@@ -215,7 +212,7 @@ SHA256::Hash SHA256::hashStringToArray(const std::string &hex_string) {
   return bytes;
 }
 
-std::string SHA256::hashArrayToString(const SHA256::Hash &bytes) {
+std::string SHA256::hashArrayToString(const Hash &bytes) {
   std::stringstream ss;
   // Set formatting for hexadecimal output
   ss << std::hex << std::setfill('0');
@@ -229,3 +226,5 @@ std::string SHA256::hashArrayToString(const SHA256::Hash &bytes) {
 
   return ss.str();
 }
+
+} // namespace SHA256
