@@ -10,9 +10,35 @@ A hobbyist attempt to mine me a bitcoin
 ![Code Quality](https://github.com/Harrison-Farrell/HF-Miner/actions/workflows/quality.yml/badge.svg)
 ![Memory Check](https://github.com/Harrison-Farrell/HF-Miner/actions/workflows/memcheck.yml/badge.svg)
 
+## Development Container
+
+This project includes a **Visual Studio Code Dev Container** configuration for consistent development environments across platforms.
+
+### Using the Dev Container
+
+1. **Install Prerequisites**:
+   - [Docker](https://www.docker.com/)
+   - [Visual Studio Code](https://code.visualstudio.com/)
+   - [Dev Containers Extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+2. **Open in Container**:
+   - Open the workspace folder in VS Code
+   - Click the "Reopen in Container" button, or
+   - Use Command Palette (`Ctrl+Shift+P`) → "Dev Containers: Reopen in Container"
+
+3. **Features Included**:
+   - C++23 compiler (GCC 13)
+   - CMake 3.30+
+   - Ninja build system
+   - Git
+   - Valgrind (for memory checking)
+   - Google Benchmark and Test frameworks
+   - Code formatting and analysis tools
+   - VS Code extensions: C++ tools, Git Graph, Clang Format, Markdown
+
 ## Building
 
-### Prerequisites
+### Prerequisites (Local Development)
 
 - **CMake** 3.30.0 or later
 - **C++23 compatible compiler** (GCC 13+, Clang 16+, or MSVC 2022)
@@ -63,6 +89,36 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_BENCHMARKS=ON -G Ninja
 # Disable specific features
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_UNIT_TESTING=OFF -G Ninja
 ```
+
+## Helper Scripts
+
+Convenience scripts are provided for common development tasks:
+
+| Script | Platform | Purpose | Command |
+|--------|----------|---------|---------|
+| `memcheck.sh` | Linux | Compile with memory checking and run Valgrind analysis | `./scripts/linux/memcheck.sh` |
+| `benchmark.sh` | Linux | Compile with benchmarks and run performance tests | `./scripts/linux/benchmark.sh` |
+| `benchmark.bat` | Windows | Compile with benchmarks and run performance tests | `.\scripts\windows\benchmark.bat` |
+
+### Script Usage
+
+**Linux environment variables**:
+```bash
+# Run benchmarks in Debug mode
+CMAKE_BUILD_TYPE=Debug ./scripts/linux/benchmark.sh
+
+# Run memcheck in Release mode
+CMAKE_BUILD_TYPE=Release ./scripts/linux/memcheck.sh
+```
+
+**Windows**:
+```batch
+REM Runs with Debug configuration by default
+.\scripts\windows\benchmark.bat
+```
+
+**Note**: The Windows `benchmark.bat` script uses Visual Studio 2022 by default; Ninja is detected and used if available.
+
 ## CI/CD
 
 GitHub Actions workflows are configured for:
