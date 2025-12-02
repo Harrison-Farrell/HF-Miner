@@ -60,3 +60,102 @@ std::vector<Hash> Block::BlockHeader::recursiveMerkleCompute(
 
   return recursiveMerkleCompute(new_level);
 }
+
+Hash Block::BlockHeader::calculateBlockHash() const {
+  // Serialize the block header (80 bytes total)
+  uint8_t header[80];
+  uint8_t *cursor = header;
+
+  // Version (4 bytes, little-endian)
+  uint32_t version = mVersion;
+  std::copy(reinterpret_cast<uint8_t *>(&version),
+            reinterpret_cast<uint8_t *>(&version) + 4, cursor);
+  cursor += mVersion_bytesize;
+
+  // Previous block hash (32 bytes)
+  std::copy(mPrevBlockHash.begin(), mPrevBlockHash.end(), cursor);
+  cursor += mPrevBlockHash_bytesize;
+
+  // Merkle root (32 bytes)
+  std::copy(mMerkleRoot.begin(), mMerkleRoot.end(), cursor);
+  cursor += mMerkleRoot_bytesize;
+
+  // Timestamp (4 bytes, little-endian)
+  uint32_t timestamp = mTimestamp;
+  std::copy(reinterpret_cast<uint8_t *>(&timestamp),
+            reinterpret_cast<uint8_t *>(&timestamp) + 4, cursor);
+  cursor += mTimestamp_bytesize;
+
+  // Bits (4 bytes, little-endian)
+  uint32_t bits = mBits;
+  std::copy(reinterpret_cast<uint8_t *>(&bits),
+            reinterpret_cast<uint8_t *>(&bits) + 4, cursor);
+  cursor += mBits_bytesize;
+
+  // Nonce (4 bytes, little-endian)
+  uint32_t nonce = mNonce;
+  std::copy(reinterpret_cast<uint8_t *>(&nonce),
+            reinterpret_cast<uint8_t *>(&nonce) + mNonce_bytesize, cursor);
+
+  // Compute double SHA-256 of the entire header
+  Hash hash;
+  SHA256::sha256_bytes(header, 80, hash.data());
+  uint8_t hash1[32];
+  std::copy(hash.begin(), hash.end(), hash1);
+  SHA256::sha256_bytes(hash1, 32, hash.data());
+
+  return hash;
+}
+
+bool Block::BlockHeader::calculateNonce(uint32_t maxAttempts) {
+  // Parse the difficulty target from bits
+  // bits format: high byte is exponent, next 3 bytes are mantissa
+  uint32_t bits = mBits;
+  uint32_t exponent = (bits >> 24) & 0xFF;
+  uint32_t mantissa = bits & 0x00FFFFFF;
+
+  // Calculate target as mantissa * 2^(8*(exponent-3))
+  // For now, we'll use a simple comparison: hash must be less than target
+  // Create target hash from bits
+  Hash target;
+  target.fill(0xFF);
+
+  if (exponent <= 3) [[unlikely]] {
+    // Target is less than 1 (should not happen in practice)
+    return false;
+  }
+
+  // Set the target bytes based on bits encoding
+  for (size_t i = 0; i < target.size(); ++i) {
+    if (i < (exponent - 3)) {
+      target[i] = 0x00;
+    } else if (i == (exponent - 3)) {
+      target[i] = static_cast<uint8_t>(mantissa & 0xFF);
+    } else if (i == (exponent - 2)) {
+      target[i] = static_cast<uint8_t>((mantissa >> 8) & 0xFF);
+    } else if (i == (exponent - 1)) {
+      target[i] = static_cast<uint8_t>((mantissa >> 16) & 0xFF);
+    } else {
+      target[i] = 0xFF;
+    }
+  }
+
+  // Try nonces from 0 to maxAttempts
+  for (uint32_t attempt = 0; attempt < maxAttempts; ++attempt) {
+    setNonce(attempt);
+    Hash blockHash = calculateBlockHash();
+
+    // Check if hash is less than target (difficulty met)
+    bool valid = true;
+    for (int i = static_cast<int>(blockHash.size()) - 1; i >= 0; --i) {
+      if (blockHash[i] < target[i]) {
+        return true;  // Found valid nonce
+      } else if (blockHash[i] > target[i]) {
+        break;  // Hash too high, continue to next nonce
+      }
+      // If equal, continue checking lower bytes
+    }
+  }
+
+  return false;  // No valid nonce found within maxAttempts
+}
