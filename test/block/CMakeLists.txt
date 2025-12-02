@@ -3,8 +3,9 @@ add_executable(test_block
 )
 
 target_link_libraries(test_block
-	PRIVATE HFM::block
+	PRIVATE HFM::types		
 	PRIVATE HFM::sha256
+	PRIVATE HFM::block
 )
 
 Format(test_block ${CMAKE_CURRENT_SOURCE_DIR})
