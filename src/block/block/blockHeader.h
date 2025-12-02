@@ -96,14 +96,33 @@ class BlockHeader {
   Hash doubleSHA256(const Hash &left, const Hash &right);
   std::vector<Hash> recursiveMerkleCompute(const std::vector<Hash> &hashes);
 
+  /// \brief Calculate a valid nonce for the block header using proof-of-work.
+  /// \param maxAttempts Maximum number of nonce attempts before giving up.
+  /// \return true if a valid nonce was found, false if maxAttempts was
+  /// exceeded.
+  /// \note Modifies mNonce to the calculated valid value on success.
+  bool calculateNonce(uint32_t maxAttempts = 0xFFFFFFFF);
+
+  /// \brief Calculate the hash of the block header.
+  /// \return The computed double SHA-256 hash of the block header.
+  Hash calculateBlockHash() const;
+
  private:
   // Block data members
-  uint32_t mVersion;
-  Hash mPrevBlockHash;
-  Hash mMerkleRoot;
-  uint32_t mTimestamp;
-  uint32_t mBits;
-  uint32_t mNonce;
+  uint32_t mVersion;    // little-endian
+  Hash mPrevBlockHash;  // natural byte order
+  Hash mMerkleRoot;     // natural byte order
+  uint32_t mTimestamp;  // little-endian
+  uint32_t mBits;       // little-endian
+  uint32_t mNonce;      // little-endian
+
+  // Byte sizes of fields
+  static constexpr int mBits_bytesize = 4;
+  static constexpr int mNonce_bytesize = 4;
+  static constexpr int mVersion_bytesize = 4;
+  static constexpr int mTimestamp_bytesize = 4;
+  static constexpr int mMerkleRoot_bytesize = 32;
+  static constexpr int mPrevBlockHash_bytesize = 32;
 };
 
 }  // namespace Block

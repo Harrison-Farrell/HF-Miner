@@ -35,7 +35,7 @@ jobs:
     - name: Run Block Memory Check
       run: |
         cd build
-        cmake --build . --target memcheck-test_block
+        cmake --build . --target memcheck-test_blockHeader
       continue-on-error: true
     
     - name: Upload memcheck reports
