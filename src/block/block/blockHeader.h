@@ -96,16 +96,24 @@ class BlockHeader {
   Hash doubleSHA256(const Hash &left, const Hash &right);
   std::vector<Hash> recursiveMerkleCompute(const std::vector<Hash> &hashes);
 
-  /// \brief Calculate a valid nonce for the block header using proof-of-work.
+  /// \brief Find a valid nonce for the block header using proof-of-work.
   /// \param maxAttempts Maximum number of nonce attempts before giving up.
   /// \return true if a valid nonce was found, false if maxAttempts was
   /// exceeded.
-  /// \note Modifies mNonce to the calculated valid value on success.
-  bool calculateNonce(uint32_t maxAttempts = 0xFFFFFFFF);
+  /// \note Modifies mNonce to the found valid value on success.
+  bool findNonce(uint32_t maxAttempts = 0xFFFFFFFF);
 
   /// \brief Calculate the hash of the block header.
   /// \return The computed double SHA-256 hash of the block header.
   Hash calculateBlockHash() const;
+
+  /// \brief Increment the nonce value by one and calculate the new block hash.
+  /// \return The computed double SHA-256 hash of the block header with incremented nonce.
+  /// \note Modifies mNonce to the incremented value.
+  inline Hash incrementNonceAndHash() {
+    mNonce++;
+    return calculateBlockHash();
+  }
 
  private:
   // Block data members

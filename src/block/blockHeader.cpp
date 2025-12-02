@@ -3,6 +3,7 @@
 // system includes
 #include <algorithm>
 #include <vector>
+#include <iostream>
 
 // project includes
 #include "sha256/sha256.h"
@@ -107,7 +108,7 @@ Hash Block::BlockHeader::calculateBlockHash() const {
   return hash;
 }
 
-bool Block::BlockHeader::calculateNonce(uint32_t maxAttempts) {
+bool Block::BlockHeader::findNonce(uint32_t maxAttempts) {
   // Parse the difficulty target from bits
   // bits format: high byte is exponent, next 3 bytes are mantissa
   uint32_t bits = mBits;
@@ -149,6 +150,7 @@ bool Block::BlockHeader::calculateNonce(uint32_t maxAttempts) {
     bool valid = true;
     for (int i = static_cast<int>(blockHash.size()) - 1; i >= 0; --i) {
       if (blockHash[i] < target[i]) {
+        std::cout << "Valid nonce found: " << attempt << std::endl;
         return true;  // Found valid nonce
       } else if (blockHash[i] > target[i]) {
         break;  // Hash too high, continue to next nonce

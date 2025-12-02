@@ -445,8 +445,8 @@ TEST(BlockHeaderTEST, calculateBlockHash_Deterministic) {
   }
 }
 
-// Test calculateNonce with a very easy difficulty
-TEST(BlockHeaderTEST, calculateNonce_EasyDifficulty) {
+// Test findNonce with a very easy difficulty
+TEST(BlockHeaderTEST, findNonce_EasyDifficulty) {
   Block::BlockHeader block;
 
   block.setVersion(BLOCK_VERSION_1);
@@ -463,7 +463,7 @@ TEST(BlockHeaderTEST, calculateNonce_EasyDifficulty) {
   block.setMerkleRoot(merkle_hash);
 
   // Try to find a nonce (limit attempts to keep test fast)
-  bool found = block.calculateNonce(10000);
+  bool found = block.findNonce(10000);
 
   // With such easy difficulty, should find one quickly
   if (found) {
@@ -472,8 +472,8 @@ TEST(BlockHeaderTEST, calculateNonce_EasyDifficulty) {
   }
 }
 
-// Test calculateNonce starts from zero
-TEST(BlockHeaderTEST, calculateNonce_StartsFromZero) {
+// Test findNonce starts from zero
+TEST(BlockHeaderTEST, findNonce_StartsFromZero) {
   Block::BlockHeader block;
 
   block.setVersion(BLOCK_VERSION_1);
@@ -492,7 +492,7 @@ TEST(BlockHeaderTEST, calculateNonce_StartsFromZero) {
   // Set initial nonce to non-zero
   block.setNonce(999999);
 
-  bool found = block.calculateNonce(10000);
+  bool found = block.findNonce(10000);
 
   if (found) {
     // Nonce should be between 0 and 10000 (or close to it)
@@ -501,8 +501,8 @@ TEST(BlockHeaderTEST, calculateNonce_StartsFromZero) {
   }
 }
 
-// Test calculateNonce increments nonce values
-TEST(BlockHeaderTEST, calculateNonce_IncrementsNonce) {
+// Test findNonce increments nonce values
+TEST(BlockHeaderTEST, findNonce_IncrementsNonce) {
   Block::BlockHeader block;
 
   block.setVersion(BLOCK_VERSION_1);
@@ -518,7 +518,7 @@ TEST(BlockHeaderTEST, calculateNonce_IncrementsNonce) {
   uint32_t nonce1 = block.getNonce();
   EXPECT_EQ(nonce1, 0);
 
-  bool found = block.calculateNonce(100000);
+  bool found = block.findNonce(100000);
 
   uint32_t nonce2 = block.getNonce();
 
@@ -527,8 +527,8 @@ TEST(BlockHeaderTEST, calculateNonce_IncrementsNonce) {
   EXPECT_GE(nonce2, 0);
 }
 
-// Test calculateNonce returns false when maxAttempts is 0
-TEST(BlockHeaderTEST, calculateNonce_MaxAttemptsZero) {
+// Test findNonce returns false when maxAttempts is 0
+TEST(BlockHeaderTEST, findNonce_MaxAttemptsZero) {
   Block::BlockHeader block;
 
   block.setVersion(BLOCK_VERSION_1);
@@ -542,12 +542,12 @@ TEST(BlockHeaderTEST, calculateNonce_MaxAttemptsZero) {
   block.setMerkleRoot(merkle_hash);
 
   // With maxAttempts = 0, should not find solution
-  bool found = block.calculateNonce(0);
+  bool found = block.findNonce(0);
   EXPECT_FALSE(found);
 }
 
-// Test calculateNonce with single attempt
-TEST(BlockHeaderTEST, calculateNonce_SingleAttempt) {
+// Test findNonce with single attempt
+TEST(BlockHeaderTEST, findNonce_SingleAttempt) {
   Block::BlockHeader block;
 
   block.setVersion(BLOCK_VERSION_1);
@@ -563,15 +563,15 @@ TEST(BlockHeaderTEST, calculateNonce_SingleAttempt) {
   block.setMerkleRoot(merkle_hash);
 
   // Try with only 1 attempt
-  bool found = block.calculateNonce(1);
+  bool found = block.findNonce(1);
 
   // Result will depend on whether nonce 0 satisfies the difficulty
   // Just verify the function executed without error
   EXPECT_GE(block.getNonce(), 0);
 }
 
-// Test calculateNonce modifies internal state
-TEST(BlockHeaderTEST, calculateNonce_ModifiesNonce) {
+// Test findNonce modifies internal state
+TEST(BlockHeaderTEST, findNonce_ModifiesNonce) {
   Block::BlockHeader block1, block2;
 
   block1.setVersion(BLOCK_VERSION_1);
@@ -593,7 +593,7 @@ TEST(BlockHeaderTEST, calculateNonce_ModifiesNonce) {
   block2.setMerkleRoot(merkle_hash);
 
   uint32_t nonce_before = block1.getNonce();
-  bool found = block1.calculateNonce(10000);
+  bool found = block1.findNonce(10000);
   uint32_t nonce_after = block1.getNonce();
 
   if (found) {
@@ -602,8 +602,8 @@ TEST(BlockHeaderTEST, calculateNonce_ModifiesNonce) {
   }
 }
 
-// Test calculateNonce with very large maxAttempts
-TEST(BlockHeaderTEST, calculateNonce_LargeMaxAttempts) {
+// Test findNonce with very large maxAttempts
+TEST(BlockHeaderTEST, findNonce_LargeMaxAttempts) {
   Block::BlockHeader block;
 
   block.setVersion(BLOCK_VERSION_1);
@@ -619,7 +619,7 @@ TEST(BlockHeaderTEST, calculateNonce_LargeMaxAttempts) {
   block.setMerkleRoot(merkle_hash);
 
   // With max uint32_t and easy difficulty, should find solution
-  bool found = block.calculateNonce(0xFFFFFFFF);
+  bool found = block.findNonce(0xFFFFFFFF);
 
   // With such easy difficulty, very likely to find
   EXPECT_TRUE(found);

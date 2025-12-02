@@ -4,6 +4,9 @@ add_library(${library_name} STATIC homepage.cpp)
 add_library(HFM::${library_name} ALIAS ${library_name})
 
 target_link_libraries(${library_name}
+	PRIVATE HFM::block
+    PRIVATE HFM::types
+    PRIVATE HFM::sha256
 )
 
 target_compile_options(${library_name}

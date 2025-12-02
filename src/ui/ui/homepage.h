@@ -3,13 +3,13 @@
 
 namespace UI {
 
-/// \brief Initialize and run the FTXUI hello world interface
+/// \brief Render an interactive BlockHeader editor with nonce calculator
 /// \return 0 on success, non-zero on error
-int runHelloWorld();
+int renderBlockHeaderEditor();
 
-/// \brief Render a window with a button and counter
+/// \brief Main UI render loop that manages navigation between all UI screens
 /// \return 0 on success, non-zero on error
-int renderInputWindow();
+int runMainUILoop();
 
 }  // namespace UI
 
