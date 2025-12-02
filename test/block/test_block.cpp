@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 // project includes
-#include "block/block.h"
+#include "block/blockHeader.h"
 #include "sha256/sha256.h"
 #include "types/types.h"
 
@@ -10,27 +10,27 @@ static void compute_sha256(const uint8_t *in, size_t len, uint8_t out[32]) {
   SHA256::sha256_bytes(in, len, out);
 }
 
-TEST(BlockTEST, convertLittleEndianToBigEndian) {
+TEST(BlockHeaderTEST, convertLittleEndianToBigEndian) {
   uint32_t value = 0x1A2B3C4D;
   uint32_t expected = 0x4D3C2B1A;
 
-  Block::Block block;
+  Block::BlockHeader block;
   block.swap32(value);
 
   EXPECT_EQ(value, expected);
 }
 
-TEST(BlockTEST, convertBigEndianToLittleEndian) {
+TEST(BlockHeaderTEST, convertBigEndianToLittleEndian) {
   uint32_t value = 0x1A2B3C4D;
   uint32_t expected = 0x4D3C2B1A;
 
-  Block::Block block;
+  Block::BlockHeader block;
   block.swap32(value);
 
   EXPECT_EQ(value, expected);
 }
 
-TEST(BlockTEST, doubleSHA256Computation) {
+TEST(BlockHeaderTEST, doubleSHA256Computation) {
   // Input data
   uint8_t data1[32] = {0};
   uint8_t data2[32] = {1};
@@ -45,7 +45,7 @@ TEST(BlockTEST, doubleSHA256Computation) {
   compute_sha256(hash1, 32, expected_hash);
 
   // Compute using Block::doubleSHA256
-  Block::Block block;
+  Block::BlockHeader block;
   Hash left, right;
   std::copy(data1, data1 + 32, left.begin());
   std::copy(data2, data2 + 32, right.begin());
@@ -56,8 +56,8 @@ TEST(BlockTEST, doubleSHA256Computation) {
 }
 
 // Test setVersion and getVersion
-TEST(BlockTEST, setVersion_getVersion) {
-  Block::Block block;
+TEST(BlockHeaderTEST, setVersion_getVersion) {
+  Block::BlockHeader block;
 
   // Test BLOCK_VERSION_1
   block.setVersion(BLOCK_VERSION_1);
@@ -82,8 +82,8 @@ TEST(BlockTEST, setVersion_getVersion) {
 }
 
 // Test setPrevBlockHash and getPrevBlockHash
-TEST(BlockTEST, setPrevBlockHash_getPrevBlockHash) {
-  Block::Block block;
+TEST(BlockHeaderTEST, setPrevBlockHash_getPrevBlockHash) {
+  Block::BlockHeader block;
   Hash test_hash;
 
   // Fill with pattern
@@ -101,8 +101,8 @@ TEST(BlockTEST, setPrevBlockHash_getPrevBlockHash) {
 }
 
 // Test setMerkleRoot and getMerkleRoot
-TEST(BlockTEST, setMerkleRoot_getMerkleRoot) {
-  Block::Block block;
+TEST(BlockHeaderTEST, setMerkleRoot_getMerkleRoot) {
+  Block::BlockHeader block;
   Hash merkle_hash;
 
   // Fill with pattern
@@ -120,8 +120,8 @@ TEST(BlockTEST, setMerkleRoot_getMerkleRoot) {
 }
 
 // Test setTimestamp and getTimestamp
-TEST(BlockTEST, setTimestamp_getTimestamp) {
-  Block::Block block;
+TEST(BlockHeaderTEST, setTimestamp_getTimestamp) {
+  Block::BlockHeader block;
 
   // Test various timestamps
   uint32_t timestamps[] = {0, 1, 0x7FFFFFFF, 0xFFFFFFFF, 1234567890};
@@ -133,8 +133,8 @@ TEST(BlockTEST, setTimestamp_getTimestamp) {
 }
 
 // Test setBits and getBits
-TEST(BlockTEST, setBits_getBits) {
-  Block::Block block;
+TEST(BlockHeaderTEST, setBits_getBits) {
+  Block::BlockHeader block;
 
   // Test various bit values
   uint32_t bits_values[] = {0, 0x00000000, 0x207FFFFF, 0xFFFFFFFF, 0x1d00ffff};
@@ -146,8 +146,8 @@ TEST(BlockTEST, setBits_getBits) {
 }
 
 // Test setNonce and getNonce
-TEST(BlockTEST, setNonce_getNonce) {
-  Block::Block block;
+TEST(BlockHeaderTEST, setNonce_getNonce) {
+  Block::BlockHeader block;
 
   // Test various nonce values
   uint32_t nonces[] = {0, 1, 0x7FFFFFFF, 0xFFFFFFFF, 0xDEADBEEF};
@@ -159,8 +159,8 @@ TEST(BlockTEST, setNonce_getNonce) {
 }
 
 // Test createMerkleRoot with single transaction
-TEST(BlockTEST, createMerkleRoot_singleTransaction) {
-  Block::Block block;
+TEST(BlockHeaderTEST, createMerkleRoot_singleTransaction) {
+  Block::BlockHeader block;
   std::vector<Hash> tx_hashes;
 
   Hash tx1;
@@ -174,8 +174,8 @@ TEST(BlockTEST, createMerkleRoot_singleTransaction) {
 }
 
 // Test createMerkleRoot with two transactions
-TEST(BlockTEST, createMerkleRoot_twoTransactions) {
-  Block::Block block;
+TEST(BlockHeaderTEST, createMerkleRoot_twoTransactions) {
+  Block::BlockHeader block;
   std::vector<Hash> tx_hashes;
 
   Hash tx1, tx2;
@@ -192,8 +192,8 @@ TEST(BlockTEST, createMerkleRoot_twoTransactions) {
 }
 
 // Test createMerkleRoot with three transactions (odd number)
-TEST(BlockTEST, createMerkleRoot_threeTransactions) {
-  Block::Block block;
+TEST(BlockHeaderTEST, createMerkleRoot_threeTransactions) {
+  Block::BlockHeader block;
   std::vector<Hash> tx_hashes;
 
   Hash tx1, tx2, tx3;
@@ -216,8 +216,8 @@ TEST(BlockTEST, createMerkleRoot_threeTransactions) {
 }
 
 // Test createMerkleRoot with four transactions
-TEST(BlockTEST, createMerkleRoot_fourTransactions) {
-  Block::Block block;
+TEST(BlockHeaderTEST, createMerkleRoot_fourTransactions) {
+  Block::BlockHeader block;
   std::vector<Hash> tx_hashes;
 
   Hash tx1, tx2, tx3, tx4;
@@ -242,8 +242,8 @@ TEST(BlockTEST, createMerkleRoot_fourTransactions) {
 }
 
 // Test createMerkleRoot with empty transactions
-TEST(BlockTEST, createMerkleRoot_emptyTransactions) {
-  Block::Block block;
+TEST(BlockHeaderTEST, createMerkleRoot_emptyTransactions) {
+  Block::BlockHeader block;
   std::vector<Hash> tx_hashes;
 
   Hash merkle = block.createMerkleRoot(tx_hashes);
@@ -255,8 +255,8 @@ TEST(BlockTEST, createMerkleRoot_emptyTransactions) {
 }
 
 // Test constructor initializes to defaults
-TEST(BlockTEST, Constructor_InitializesDefaults) {
-  Block::Block block;
+TEST(BlockHeaderTEST, Constructor_InitializesDefaults) {
+  Block::BlockHeader block;
 
   EXPECT_EQ(block.getVersion(), 0);
   EXPECT_EQ(block.getTimestamp(), 0);
@@ -271,8 +271,8 @@ TEST(BlockTEST, Constructor_InitializesDefaults) {
 }
 
 // Test all setters and getters together (integration)
-TEST(BlockTEST, AllSettersGetters_Integration) {
-  Block::Block block;
+TEST(BlockHeaderTEST, AllSettersGetters_Integration) {
+  Block::BlockHeader block;
 
   // Set all values
   uint32_t version = BLOCK_VERSION_4;

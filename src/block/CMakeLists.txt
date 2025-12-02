@@ -1,6 +1,6 @@
 set(library_name block)
 
-add_library(${library_name} STATIC block.cpp)
+add_library(${library_name} STATIC blockHeader.cpp)
 add_library(HFM::${library_name} ALIAS ${library_name})
 
 target_link_libraries(${library_name}
@@ -19,7 +19,7 @@ target_include_directories(${library_name}
 )
 
 set_target_properties(${library_name} PROPERTIES
-	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/${library_name}/block.h
+	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/${library_name}/blockHeader.h
 	POSITION_INDEPENDENT_CODE 1
 )
 
