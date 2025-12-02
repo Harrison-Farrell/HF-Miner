@@ -23,6 +23,7 @@ include(Cppcheck)
 include(Coverage)
 include(Memcheck)
 include(Benchmarking)
+include(FTXUI)
 
 # Include subdirectories
 add_subdirectory(src)
