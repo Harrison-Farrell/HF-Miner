@@ -5,8 +5,12 @@
 #include <sstream>
 #include <stdexcept>
 
+// project includes
+#include "types/types.h"
+
 namespace SHA256 {
 
+namespace SHA256_internal {
 // Rotate right
 static inline uint32_t rotr(uint32_t x, int n) {
   return (x >> n) | (x << (32 - n));
@@ -37,6 +41,8 @@ static inline void update_w(uint32_t *w, int i, const uint8_t *buffer) {
     }
   }
 }
+
+}  // namespace SHA256_internal
 
 void SHA256::sha256_block(SHA256::Context *ctx) {
   // State of the program
@@ -70,22 +76,22 @@ void SHA256::sha256_block(SHA256::Context *ctx) {
 
   int i, j;
   for (i = 0; i < 64; i += 16) {
-    update_w(w, i, ctx->buffer);
+    SHA256_internal::update_w(w, i, ctx->buffer);
 
     for (j = 0; j < 16; j += 4) {
       uint32_t temp;
-      temp = h + step1(e, f, g) + k[i + j + 0] + w[j + 0];
+      temp = h + SHA256_internal::step1(e, f, g) + k[i + j + 0] + w[j + 0];
       h = temp + d;
-      d = temp + step2(a, b, c);
-      temp = g + step1(h, e, f) + k[i + j + 1] + w[j + 1];
+      d = temp + SHA256_internal::step2(a, b, c);
+      temp = g + SHA256_internal::step1(h, e, f) + k[i + j + 1] + w[j + 1];
       g = temp + c;
-      c = temp + step2(d, a, b);
-      temp = f + step1(g, h, e) + k[i + j + 2] + w[j + 2];
+      c = temp + SHA256_internal::step2(d, a, b);
+      temp = f + SHA256_internal::step1(g, h, e) + k[i + j + 2] + w[j + 2];
       f = temp + b;
-      b = temp + step2(c, d, a);
-      temp = e + step1(f, g, h) + k[i + j + 3] + w[j + 3];
+      b = temp + SHA256_internal::step2(c, d, a);
+      temp = e + SHA256_internal::step1(f, g, h) + k[i + j + 3] + w[j + 3];
       e = temp + a;
-      a = temp + step2(b, c, d);
+      a = temp + SHA256_internal::step2(b, c, d);
     }
   }
 
@@ -227,4 +233,4 @@ std::string SHA256::hashArrayToString(const Hash &bytes) {
   return ss.str();
 }
 
-} // namespace SHA256
+}  // namespace SHA256

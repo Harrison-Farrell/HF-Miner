@@ -3,6 +3,7 @@ add_executable(test_sha256
 )
 
 target_link_libraries(test_sha256
+	PRIVATE HFM::types	
 	PRIVATE HFM::sha256
 )
 

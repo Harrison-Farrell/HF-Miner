@@ -3,6 +3,10 @@ set(library_name sha256)
 add_library(${library_name} STATIC sha256.cpp)
 add_library(HFM::${library_name} ALIAS ${library_name})
 
+target_link_libraries(${library_name}
+	PRIVATE HFM::types
+)
+
 target_compile_options(${library_name}
 	PRIVATE ${DEFAULT_CXX_COMPILE_FLAGS}
 	PRIVATE ${DEFAULT_CXX_OPTIMIZE_FLAG}

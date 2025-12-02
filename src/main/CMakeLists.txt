@@ -11,4 +11,5 @@ target_link_libraries(${executable_name}
 	PRIVATE 
 	HFM::sha256
 	HFM::block
+	HFM::types
 )

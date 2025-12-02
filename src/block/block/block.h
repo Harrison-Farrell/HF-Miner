@@ -7,17 +7,18 @@
 #include <cstdint>
 #include <vector>
 
+// project includes
+#include "types/types.h"
+
 namespace Block {
 
 #define BLOCK_VERSION_1 0x00000001
-#define BLOCK_VERSION_2 0x00000002 // reference: BIP34
-#define BLOCK_VERSION_3 0x00000003 // reference: BIP66
-#define BLOCK_VERSION_4 0x00000004 // reference: BIP65
-
-using Hash = std::array<unsigned char, 32>;
+#define BLOCK_VERSION_2 0x00000002  // reference: BIP34
+#define BLOCK_VERSION_3 0x00000003  // reference: BIP66
+#define BLOCK_VERSION_4 0x00000004  // reference: BIP65
 
 class Block {
-public:
+ public:
   /// \brief Default constructor. Initializes block fields to sensible defaults
   /// (zeros).
   Block();
@@ -95,7 +96,7 @@ public:
   Hash doubleSHA256(const Hash &left, const Hash &right);
   std::vector<Hash> recursiveMerkleCompute(const std::vector<Hash> &hashes);
 
-private:
+ private:
   // Block data members
   uint32_t mVersion;
   Hash mPrevBlockHash;
@@ -105,5 +106,5 @@ private:
   uint32_t mNonce;
 };
 
-} // namespace Block
-#endif // __BLOCK_H__
+}  // namespace Block
+#endif  // __BLOCK_H__
