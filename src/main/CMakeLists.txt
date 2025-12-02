@@ -13,3 +13,9 @@ target_link_libraries(${executable_name}
 	HFM::block
 	HFM::types
 )
+
+# project custom macros
+CleanCoverage(${executable_name})
+Format(${executable_name} .)
+AddCppcheck(${executable_name})
+AddSpdlog(${executable_name})

@@ -2,6 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <bit>
+
+// dependency includes
+#include <spdlog/spdlog.h>
+
 // project includes
 #include "block/blockHeader.h"
 #include "sha256/sha256.h"
@@ -9,6 +14,11 @@
 
 int main() {
   // Input text.
+
+  spdlog::info("Starting SHA-256 example...");
+  spdlog::info("Compute is: {} endian",
+               std::endian::native == std::endian::little ? "little" : "big");
+
   const char *text = "Hello World!";
 
   /* Char array to store the hexadecimal SHA-256 string. */

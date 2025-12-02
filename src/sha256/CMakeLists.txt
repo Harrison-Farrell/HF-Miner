@@ -22,6 +22,7 @@ set_target_properties(${library_name} PROPERTIES
 	POSITION_INDEPENDENT_CODE 1
 )
 
+# project custom macros
 CleanCoverage(${library_name})
 Format(${library_name} .)
 AddCppcheck(${library_name})
