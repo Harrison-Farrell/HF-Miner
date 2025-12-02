@@ -17,14 +17,14 @@ namespace Block {
 #define BLOCK_VERSION_3 0x00000003  // reference: BIP66
 #define BLOCK_VERSION_4 0x00000004  // reference: BIP65
 
-class Block {
+class BlockHeader {
  public:
   /// \brief Default constructor. Initializes block fields to sensible defaults
   /// (zeros).
-  Block();
+  BlockHeader();
 
   /// \brief Destructor.
-  ~Block();
+  ~BlockHeader();
 
   // Setters
   /// \brief Set the block version.

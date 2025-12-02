@@ -3,7 +3,9 @@
 #include <string.h>
 
 // project includes
+#include "block/blockHeader.h"
 #include "sha256/sha256.h"
+#include "types/types.h"
 
 int main() {
   // Input text.
