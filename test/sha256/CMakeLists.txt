@@ -1,6 +1,4 @@
-add_executable(test_sha256
-	test_sha256.cpp
-)
+add_executable(test_sha256 test_sha256.cpp)
 
 target_link_libraries(test_sha256
 	PRIVATE HFM::types	

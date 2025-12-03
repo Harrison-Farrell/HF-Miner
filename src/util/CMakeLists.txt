@@ -1,14 +1,10 @@
-set(library_name types)
+set(library_name util)
 
 add_library(${library_name} STATIC 
-	types.cpp
-	bitArray.cpp
+	endian.cpp
+	transcode.cpp
 )
 add_library(HFM::${library_name} ALIAS ${library_name})
-
-target_link_libraries(${library_name}
-	PRIVATE HFM::util
-)
 
 target_compile_options(${library_name} 
 	PRIVATE ${DEFAULT_CXX_COMPILE_FLAGS}
@@ -21,8 +17,8 @@ target_include_directories(${library_name}
 )
 
 set_target_properties(${library_name} PROPERTIES
-	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/${library_name}/types.h
-	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/${library_name}/bitArray.h
+	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/${library_name}/endian.h
+	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/${library_name}/transcode.h
 	POSITION_INDEPENDENT_CODE 1
 )
 

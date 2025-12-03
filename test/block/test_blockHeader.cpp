@@ -10,26 +10,6 @@ static void compute_sha256(const uint8_t* in, size_t len, uint8_t out[32]) {
   SHA256::sha256_bytes(in, len, out);
 }
 
-TEST(BlockHeaderTEST, convertLittleEndianToBigEndian) {
-  uint32_t value = 0x1A2B3C4D;
-  uint32_t expected = 0x4D3C2B1A;
-
-  Block::BlockHeader block;
-  block.swap32(value);
-
-  EXPECT_EQ(value, expected);
-}
-
-TEST(BlockHeaderTEST, convertBigEndianToLittleEndian) {
-  uint32_t value = 0x1A2B3C4D;
-  uint32_t expected = 0x4D3C2B1A;
-
-  Block::BlockHeader block;
-  block.swap32(value);
-
-  EXPECT_EQ(value, expected);
-}
-
 TEST(BlockHeaderTEST, doubleSHA256Computation) {
   // Input data
   uint8_t data1[32] = {0};
