@@ -5,6 +5,8 @@ add_executable(benchmark_sha256
 
 target_link_libraries(benchmark_sha256
     PRIVATE HFM::sha256
+    PRIVATE HFM::util
+    PRIVATE HFM::types
 )
 
 # Apply project formatting rules (if available) and link Google Benchmark

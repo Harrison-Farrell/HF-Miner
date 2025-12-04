@@ -6,7 +6,7 @@
 #include "sha256/sha256.h"
 #include "types/types.h"
 
-static void compute_sha256(const uint8_t* in, size_t len, uint8_t out[32]) {
+static void compute_sha256(const uint8_t *in, size_t len, uint8_t out[32]) {
   SHA256::sha256_bytes(in, len, out);
 }
 
@@ -387,7 +387,7 @@ TEST(BlockHeaderTEST, calculateBlockHash_WithZeroValues) {
 
   // Hash should not be all zeros
   bool all_zero = true;
-  for (const auto& byte : hash) {
+  for (const auto &byte : hash) {
     if (byte != 0) {
       all_zero = false;
       break;
@@ -513,7 +513,7 @@ TEST(BlockHeaderTEST, calculateNonce_MaxAttemptsZero) {
 
   block.setVersion(BLOCK_VERSION_1);
   block.setTimestamp(1000000);
-  block.setBits(0x1d00ffff);  // Bitcoin difficulty
+  block.setBits(0x1d00ffff); // Bitcoin difficulty
 
   Hash prev_hash, merkle_hash;
   prev_hash.fill(0x00);

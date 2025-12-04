@@ -13,12 +13,12 @@
 namespace Block {
 
 #define BLOCK_VERSION_1 0x00000001
-#define BLOCK_VERSION_2 0x00000002  // reference: BIP34
-#define BLOCK_VERSION_3 0x00000003  // reference: BIP66
-#define BLOCK_VERSION_4 0x00000004  // reference: BIP65
+#define BLOCK_VERSION_2 0x00000002 // reference: BIP34
+#define BLOCK_VERSION_3 0x00000003 // reference: BIP66
+#define BLOCK_VERSION_4 0x00000004 // reference: BIP65
 
 class BlockHeader {
- public:
+public:
   /// \brief Default constructor. Initializes block fields to sensible defaults
   /// (zeros).
   BlockHeader();
@@ -107,14 +107,14 @@ class BlockHeader {
   /// \return The computed double SHA-256 hash of the block header.
   Hash calculateBlockHash() const;
 
- private:
+private:
   // Block data members
-  uint32_t mVersion;    // little-endian
-  Hash mPrevBlockHash;  // natural byte order
-  Hash mMerkleRoot;     // natural byte order
-  uint32_t mTimestamp;  // little-endian
-  uint32_t mBits;       // little-endian
-  uint32_t mNonce;      // little-endian
+  uint32_t mVersion;   // little-endian
+  Hash mPrevBlockHash; // natural byte order
+  Hash mMerkleRoot;    // natural byte order
+  uint32_t mTimestamp; // little-endian
+  uint32_t mBits;      // little-endian
+  uint32_t mNonce;     // little-endian
 
   // Byte sizes of fields
   static constexpr int mBits_bytesize = 4;
@@ -125,5 +125,5 @@ class BlockHeader {
   static constexpr int mPrevBlockHash_bytesize = 32;
 };
 
-}  // namespace Block
-#endif  // __BLOCK_H__
+} // namespace Block
+#endif // __BLOCK_H__

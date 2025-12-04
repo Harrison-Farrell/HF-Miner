@@ -18,7 +18,7 @@ TEST(TranscodeTest, ConstevalHexDigit) {
   constexpr uint8_t result9 = util::ConstevalHexDigit('9');
   EXPECT_EQ(result9, 9);
 
-    constexpr uint8_t resulta = util::ConstevalHexDigit('a');
+  constexpr uint8_t resulta = util::ConstevalHexDigit('a');
   EXPECT_EQ(resulta, 0x0A);
 
   constexpr uint8_t resultb = util::ConstevalHexDigit('b');

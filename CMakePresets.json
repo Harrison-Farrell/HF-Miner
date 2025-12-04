@@ -1,0 +1,137 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "default",
+      "description": "Default configuration with all options disabled",
+      "hidden": false,
+      "binaryDir": "${sourceDir}/build",
+      "generator": "Ninja Multi-Config",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_UNIT_TESTING": "ON",
+        "ENABLE_FORMAT": "OFF",
+        "ENABLE_CPPCHECK": "OFF",
+        "ENABLE_DOXYGEN": "OFF",
+        "ENABLE_COVERAGE": "OFF",
+        "ENABLE_MEMCHECK": "OFF",
+        "ENABLE_BENCHMARKS": "OFF"
+      }
+    },
+    {
+      "name": "all-enabled",
+      "description": "Configuration with all options enabled",
+      "hidden": false,
+      "binaryDir": "${sourceDir}/build/all-enabled",
+      "generator": "Ninja Multi-Config",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_UNIT_TESTING": "ON",
+        "ENABLE_FORMAT": "ON",
+        "ENABLE_CPPCHECK": "OFF",
+        "ENABLE_DOXYGEN": "ON",
+        "ENABLE_COVERAGE": "ON",
+        "ENABLE_MEMCHECK": "ON",
+        "ENABLE_BENCHMARKS": "ON"
+      }
+    },
+    {
+      "name": "Developer-debug",
+      "description": "Debug configuration with developer options enabled",
+      "hidden": false,
+      "binaryDir": "${sourceDir}/build/developer-debug",
+      "inherits": "all-enabled",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release-all",
+      "description": "Release configuration with all options enabled",
+      "hidden": false,
+      "binaryDir": "${sourceDir}/build/release-all",
+      "inherits": "all-enabled",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+      "name": "testing-only",
+      "description": "Testing and coverage analysis configuration",
+      "hidden": false,
+      "binaryDir": "${sourceDir}/build/testing-only",
+      "generator": "Ninja Multi-Config",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_UNIT_TESTING": "ON",
+        "ENABLE_FORMAT": "OFF",
+        "ENABLE_CPPCHECK": "OFF",
+        "ENABLE_DOXYGEN": "OFF",
+        "ENABLE_COVERAGE": "ON",
+        "ENABLE_MEMCHECK": "ON",
+        "ENABLE_BENCHMARKS": "OFF"
+      }
+    },
+    {
+      "name": "analysis",
+      "description": "Static analysis and documentation configuration",
+      "hidden": false,
+      "binaryDir": "${sourceDir}/build/analysis",
+      "generator": "Ninja Multi-Config",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_UNIT_TESTING": "ON",
+        "ENABLE_FORMAT": "ON",
+        "ENABLE_CPPCHECK": "ON",
+        "ENABLE_DOXYGEN": "ON",
+        "ENABLE_COVERAGE": "OFF",
+        "ENABLE_MEMCHECK": "OFF",
+        "ENABLE_BENCHMARKS": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "all-enabled-build",
+      "description": "Build with all-enabled preset",
+      "configurePreset": "all-enabled",
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "Developer-debug-build",
+      "description": "Debug build with developer options enabled",
+      "configurePreset": "Developer-debug",
+      "inheritConfigureEnvironment": true
+    },
+    {
+      "name": "release-all-build",
+      "description": "Release build with all options",
+      "configurePreset": "release-all",
+      "inheritConfigureEnvironment": true
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "all-enabled-test",
+      "description": "Run tests with all-enabled preset",
+      "configurePreset": "all-enabled",
+      "inheritConfigureEnvironment": true,
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "testing-only-test",
+      "description": "Run tests with testing-only preset",
+      "configurePreset": "testing-only",
+      "inheritConfigureEnvironment": true,
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

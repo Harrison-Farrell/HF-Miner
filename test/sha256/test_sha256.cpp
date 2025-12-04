@@ -93,7 +93,7 @@ TEST(SHA256_Streaming, ContextReuse) {
 
   // Reuse
   SHA256::sha256_init(&ctx);
-  SHA256::sha256_append(&ctx, "", 0);  // Empty string
+  SHA256::sha256_append(&ctx, "", 0); // Empty string
   SHA256::sha256_finalize_hex(&ctx, output);
 
   // Expect empty string hash
@@ -247,11 +247,11 @@ TEST(SHA256_Functions, Append_AccumulatesBits) {
 
   // Append 5 bytes
   SHA256::sha256_append(&ctx, "hello", 5);
-  EXPECT_EQ(ctx.n_bits, 5 * 8);  // 40 bits
+  EXPECT_EQ(ctx.n_bits, 5 * 8); // 40 bits
 
   // Append 4 more bytes
   SHA256::sha256_append(&ctx, "test", 4);
-  EXPECT_EQ(ctx.n_bits, 9 * 8);  // 72 bits
+  EXPECT_EQ(ctx.n_bits, 9 * 8); // 72 bits
 }
 
 // Direct test coverage for sha256_finalize_hex

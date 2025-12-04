@@ -12,14 +12,13 @@
 #include "types/types.h"
 
 namespace SHA256 {
-static constexpr int SHA256_BYTES_SIZE = 32;  // 32 bytes
-static constexpr int SHA256_HEX_SIZE =
-    64 + 1;  // 64 hex chars + null terminator
+static constexpr int SHA256_BYTES_SIZE = 32;   // 32 bytes
+static constexpr int SHA256_HEX_SIZE = 64 + 1; // 64 hex chars + null terminator
 
 /// \brief SHA256 hash computation class providing static one-shot methods
 /// and a streaming context interface.
 class SHA256 {
- public:
+public:
   /// \brief Context structure for streaming SHA-256 computation.
   struct Context {
     uint32_t state[8];
@@ -85,7 +84,7 @@ class SHA256 {
   /// \return std::string The 64-character hexadecimal hash string.
   static std::string hashArrayToString(const Hash &bytes);
 
- private:
+private:
   // Private helper methods
   static void sha256_block(Context *ctx);
   static void sha256_append_byte(Context *ctx, uint8_t byte);
@@ -124,5 +123,5 @@ inline std::string hashArrayToString(const Hash &bytes) {
   return SHA256::hashArrayToString(bytes);
 }
 
-}  // namespace SHA256
-#endif  // __SHA256_H__
+} // namespace SHA256
+#endif // __SHA256_H__
