@@ -41,8 +41,8 @@ Hash Block::BlockHeader::createMerkleRoot(const std::vector<Hash> &tx_hashes) {
   return mMerkleRoot;
 }
 
-std::vector<Hash> Block::BlockHeader::recursiveMerkleCompute(
-    const std::vector<Hash> &hashes) {
+std::vector<Hash>
+Block::BlockHeader::recursiveMerkleCompute(const std::vector<Hash> &hashes) {
   if (hashes.size() == 1) {
     return hashes;
   }
@@ -149,13 +149,13 @@ bool Block::BlockHeader::calculateNonce(uint32_t maxAttempts) {
     bool valid = true;
     for (int i = static_cast<int>(blockHash.size()) - 1; i >= 0; --i) {
       if (blockHash[i] < target[i]) {
-        return true;  // Found valid nonce
+        return true; // Found valid nonce
       } else if (blockHash[i] > target[i]) {
-        break;  // Hash too high, continue to next nonce
+        break; // Hash too high, continue to next nonce
       }
       // If equal, continue checking lower bytes
     }
   }
 
-  return false;  // No valid nonce found within maxAttempts
+  return false; // No valid nonce found within maxAttempts
 }

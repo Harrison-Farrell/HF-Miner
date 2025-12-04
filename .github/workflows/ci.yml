@@ -43,18 +43,6 @@ jobs:
     - name: Build
       run: cmake --build build --config ${{ matrix.build-type }}
     
-    - name: Run sha256 Tests
-      run: |
-        cd build
-        ctest --build-config ${{ matrix.build-type }} --output-on-failure -R "sha256"
-      shell: bash
-    
-    - name: Run Block Tests
-      run: |
-        cd build
-        ctest --build-config ${{ matrix.build-type }} --output-on-failure -R "block"
-      shell: bash
-    
     - name: Run All Tests
       run: |
         cd build

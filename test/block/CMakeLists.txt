@@ -1,6 +1,4 @@
-add_executable(test_blockHeader
-	test_blockHeader.cpp
-)
+add_executable(test_blockHeader test_blockHeader.cpp)
 
 target_link_libraries(test_blockHeader
 	PRIVATE HFM::types		

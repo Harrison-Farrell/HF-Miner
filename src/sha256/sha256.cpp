@@ -42,7 +42,7 @@ static inline void update_w(uint32_t *w, int i, const uint8_t *buffer) {
   }
 }
 
-}  // namespace SHA256_internal
+} // namespace SHA256_internal
 
 void SHA256::sha256_block(SHA256::Context *ctx) {
   // State of the program
@@ -233,4 +233,4 @@ std::string SHA256::hashArrayToString(const Hash &bytes) {
   return ss.str();
 }
 
-}  // namespace SHA256
+} // namespace SHA256

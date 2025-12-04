@@ -37,6 +37,18 @@ jobs:
         cd build
         cmake --build . --target memcheck-test_blockHeader
       continue-on-error: true
+
+    - name: Run Util Memory Check
+      run: |
+        cd build
+        cmake --build . --target memcheck-test_transcode
+      continue-on-error: true
+
+    - name: Run Endian Memory Check
+      run: |
+        cd build
+        cmake --build . --target memcheck-test_endian
+      continue-on-error: true
     
     - name: Upload memcheck reports
       if: always()
