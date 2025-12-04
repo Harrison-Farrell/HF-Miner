@@ -29,4 +29,3 @@ set_target_properties(${library_name} PROPERTIES
 CleanCoverage(${library_name})
 Format(${library_name} .)
 AddCppcheck(${library_name})
-Doxygen(${library_name} ${library_name})

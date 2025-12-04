@@ -23,7 +23,7 @@ function(Doxygen target input)
 	set(NAME "doxygen-${target}")
 	set(DOXYGEN_EXTRACT_ALL           YES)
 	set(DOXYGEN_EXTRACT_PRIVATE       YES)
-	set(DOXYGEN_HTML_OUTPUT           ${PROJECT_BINARY_DIR}/${NAME})
+	set(DOXYGEN_HTML_OUTPUT     ${PROJECT_BINARY_DIR}/doxygen/)
 	set(DOXYGEN_GENERATE_HTML         YES)
 	set(DOXYGEN_GENERATE_TREEVIEW     YES)
 	set(DOXYGEN_HAVE_DOT              YES)
@@ -31,9 +31,20 @@ function(Doxygen target input)
 	set(DOXYGEN_DOT_TRANSPARENT       YES)
 	set(DOXYGEN_HTML_COLORSTYLE       DARK)
 	set(DOXYGEN_HTML_EXTRA_STYLESHEET ${doxygen_awesome_css_SOURCE_DIR}/doxygen-awesome.css)
+	set(DOXYGEN_EXCLUDE_PATTERNS
+		*/build/*
+		*/cmake/*
+		*/test/*
+		*/benchmark/*
+		*/.vscode/*
+		*/.git/*
+		*/.github/*
+		*/scripts/*
+		*/.devcontainer/*
+	)
 
 	doxygen_add_docs(${NAME}
-		${PROJECT_SOURCE_DIR}/${input}
+		${input}
 		COMMENT "Generate HTML documentation"
 	)
 endfunction()

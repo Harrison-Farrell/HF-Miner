@@ -42,29 +42,60 @@ This project includes a **Visual Studio Code Dev Container** configuration for c
 
 - **CMake** 3.30.0 or later
 - **C++23 compatible compiler** (GCC 13+, Clang 16+, or MSVC 2022)
-- **Ninja** (recommended) or Make
+- **Ninja** build system
 
-### Build Instructions
+### Quick Start with CMakePresets
+
+This project uses **CMakePresets.json** for standardized build configurations. Use presets for consistent builds across all platforms:
 
 ```bash
-# Configure (unit tests enabled by default)
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+# List available presets
+cmake --list-presets
+
+# Configure with a preset
+cmake --preset <preset-name>
 
 # Build
-cmake --build build --config Release
+cmake --build --preset <preset-name>-build
 
-# Run Tests
-cd build
-ctest --build-config Release --output-on-failure
+# Run tests
+ctest --preset <preset-name>-test
+```
+
+### Available Presets
+
+| Preset | Purpose | Tests | Format | Analysis | Benchmarks | Doxygen | Coverage | Memcheck |
+|--------|---------|-------|--------|----------|-----------|---------|----------|----------|
+| `Default-Release` | Production release build | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| `Developer` | Full development environment | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `Release-with-options` | Release with optional features | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `testing-only` | Testing and coverage | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
+
+**Quick Examples:**
+
+```bash
+# Development with all features enabled
+cmake --preset Developer
+cmake --build --preset Developer-build
+ctest --preset all-enabled-test
+
+# Testing and coverage analysis
+cmake --preset testing-only
+cmake --build --preset testing-only-build
+ctest --preset testing-only-test
+
+# Production release
+cmake --preset Default-Release
+cmake --build --preset Default-Release-build
 ```
 
 ### Build Configuration Options
 
-CMake options are manually controlled and default as follows:
+CMake options are controlled via `CMakePresets.json`. Individual cache variables:
 
 | Option | Default | Purpose |
 |--------|---------|---------|
-| `ENABLE_UNIT_TESTING` | ON | Enable/disable test targets |
+| `ENABLE_UNIT_TESTING` | ON (Developer) | Enable/disable test targets |
 | `ENABLE_FORMAT` | OFF | Enable/disable automatic code formatting |
 | `ENABLE_BENCHMARKS` | OFF | Enable/disable performance benchmark targets |
 | `ENABLE_DOXYGEN` | OFF | Enable/disable API documentation generation |
@@ -79,16 +110,6 @@ CMake options are manually controlled and default as follows:
 | `lcov` / `genhtml` | Linux | Code coverage reporting | ENABLE_COVERAGE |
 | `llvm-cov` / `llvm-profdata` | macOS, Clang/Windows | Code coverage reporting | ENABLE_COVERAGE |
 | `valgrind` | Linux | Memory checking backend | ENABLE_MEMCHECK |
-
-Override defaults explicitly:
-
-```bash
-# Enable specific features
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DENABLE_BENCHMARKS=ON -G Ninja
-
-# Disable specific features
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DENABLE_UNIT_TESTING=OFF -G Ninja
-```
 
 ## Helper Scripts
 
